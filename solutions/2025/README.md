@@ -23,7 +23,8 @@ Each year the puzzles seem to have something different in common in terms of ste
 these steps can easily be performed using built-in python features and therefore AoC serves as a good refresher of methods
 you tend to forget about. Below is an overview of methods/ideas that define 2025s signature:
 
-- [Modulo Operator][mod-info]: The use of mod (`%`) to quickly receive the signed remainder of a division.
+- **Division Components**: The use of the modulo operator (`%`) and/or floor division (`//`) to quickly receive and/or remove
+                           the rest terms of a division.
 
 Day 1 - Secret Entrance
 -----------------------
@@ -37,7 +38,7 @@ us open the safe.
 document = open(...).read().split("\n")
 ```
 
-### Part 1
+### Part 1.1
 
 Note that the dial has a range from 0 to 99 and we are only interested in the number of times the dial is left pointing
 at 0 after any full rotation. Hence, we are only interested in the [modulo][mod-info] of 100 as any multiple of 100 
@@ -52,10 +53,10 @@ for rotation in document:
         counter += 1
 ```
 
-### Part 2
+### Part 1.2
 
 Now each individual turn of the dial within a given rotation should be checked, but this is easily done by simply adding
-an additional for-loop to our previous solution:
+a for-loop to our previous solution:
 
 ```python
 counter, dial = 0, 50
@@ -78,7 +79,7 @@ We are given a few product **ID ranges** that we need to check to help out the c
 ids = open(...).read().split(",")
 ```
 
-### Part 1
+### Part 2.1
 
 An invalid ID is defined by a sequence of digits **repeated twice**, therefore the problem actually boils down to simply 
 checking if the first half of the string equals the second half of the string for each ID in the given range:
@@ -93,14 +94,14 @@ for ID in ids:
             total += n
 ```
 
-### Part 2
+### Part 2.2
 
 Now an invalid ID is actually defined by a sequence of digits **repeated at least twice**.
 
 Multiple solutions, why?! After solving part 2, I realised that I had tunnel vision and simply wanted to extend my
 previous code to find the answer quickly. It worked, however, I realised afterward that it could be solved in a much easier manner.
 
-#### Solution 1
+#### Solution 2.2.1
 
 The idea behind my first solution is along the same lines as the solution for part 1. Instead of only dividing each
 sequence into two separate chunks to compare, I added a loop over the length of the sequence (half its length to be precise)
@@ -120,7 +121,7 @@ for ID in ids:
                     break
 ```
 
-#### Solution 2
+#### Solution 2.2.2
 
 However, the previous solution is quite slow (5s) and that always gets me thinking during AoC: is there a trick such that
 I can do less? In this particular case, is it possible to reduce the number of times we have to loop? The answer: **YES!**

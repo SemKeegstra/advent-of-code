@@ -2,7 +2,7 @@ Advent of Code
 ==============
 
 This repository is an overview of my personal [Advent of Code (AoC)][aoc-site] solutions, which
-are currently only given in [python][python-site].
+are given in [python][python-site].
 
 About AoC
 ---------
