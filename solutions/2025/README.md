@@ -31,7 +31,7 @@ Day 1 - Secret Entrance
 [Puzzle][d01-puzzle] — [Back to top][top]
 
 We are given a document that contains a sequence of **rotations**, one per line, which will help
-us open the safe.
+us open the safe. Each rotation consists of a **direction** and the number of **turns**.
 
 ```python
 # Input:
@@ -142,6 +142,52 @@ should be able to shift our view of `s + s` by one character and still have the 
 we reach the middle of the concatenated string. This means we do not actually need an additional loop at all, we just need
 to concatenate the ID string and look within!
 
+Day 3 - Lobby
+-------------
+[Puzzle][d03-puzzle] — [Back to top][top]
+
+We are given a list of **joltage ratings** for the batteries of the broken escalator, where each line represents a 
+**bank** of batteries.
+
+```python
+# Input:
+ratings = open(...).read().split("\n")
+```
+
+### Part 3.1
+
+Note that we are just asked to find the highest 2-digit number we can make from a string of numbers, while not violating 
+their order within the original list. To avoid unnecessary loops we simply search the highest number among the first
+`n-1` digits using the [max function][max-info] and then do the same for the remaining candidates:
+
+```python
+total = 0
+for bank in ratings:
+    first = max(bank[:-1])
+    second = max(bank[bank.index(first)+1:])
+    total += int(first + second)
+```
+
+### Part 3.2
+
+The problem is now expanded to finding the highest 12-digit number, however we can still use the same [greedy approach][greedy-info]
+as our first solution. Instead of finding one additional digit, we just loop and find 11 additional digits. At each
+**step** our possible candidates are still all the remaining digits after the previous chosen joltage, but now we also
+need to exclude all digits at the end that would prohibit us from ending up with 12 total digits:
+
+```python
+size, total = 12, 0
+for bank in ratings:
+    joltage = max(bank[:-size+1])
+    for step in range(1, size):
+        bank = bank[bank.index(joltage[-1])+1:]
+        joltage += max(bank[:len(bank) - size + step + 1])
+    total += int(joltage)
+```
+
+
+
+
 [aoc-2025]: https://adventofcode.com/2025
 
 [top]: #advent-of-code-2025-solutions
@@ -151,5 +197,8 @@ to concatenate the ID string and look within!
 
 [d01-puzzle]: https://adventofcode.com/2025/day/1
 [d02-puzzle]: https://adventofcode.com/2025/day/2
+[d03-puzzle]: https://adventofcode.com/2025/day/3
 
 [mod-info]: https://en.wikipedia.org/wiki/Modulo
+[max-info]: https://docs.python.org/3/library/functions.html#max
+[greedy-info]: https://en.wikipedia.org/wiki/Greedy_algorithm
