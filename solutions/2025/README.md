@@ -16,6 +16,7 @@ Table of Contents
 - [Signature Moves][sig]
 - [Day 1 - Secret Entrance][d01]
 - [Day 2 - Gift Shop][d02]
+- [Day 3 - Lobby][d03]
 
 Signature Moves
 ---------------
@@ -147,7 +148,7 @@ Day 3 - Lobby
 [Puzzle][d03-puzzle] — [Back to top][top]
 
 We are given a list of **joltage ratings** for the batteries of the broken escalator, where each line represents a 
-**bank** of batteries.
+**bank** of batteries:
 
 ```python
 # Input:
@@ -194,6 +195,7 @@ for bank in ratings:
 [sig]: #signature-moves
 [d01]: #day-1---secret-entrance
 [d02]: #day-2---gift-shop
+[d03]: #day-3---lobby
 
 [d01-puzzle]: https://adventofcode.com/2025/day/1
 [d02-puzzle]: https://adventofcode.com/2025/day/2
