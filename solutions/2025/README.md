@@ -17,6 +17,7 @@ Table of Contents
 - [Day 1 - Secret Entrance][d01]
 - [Day 2 - Gift Shop][d02]
 - [Day 3 - Lobby][d03]
+- [Day 4 - Printing Department][d04]
 
 Signature Moves
 ---------------
@@ -36,7 +37,7 @@ us open the safe. Each rotation consists of a **direction** and the number of **
 
 ```python
 # Input:
-document = open(...).read().split("\n")
+document = open(...).read().splitlines()
 ```
 
 ### Part 1.1
@@ -152,7 +153,7 @@ We are given a list of **joltage ratings** for the batteries of the broken escal
 
 ```python
 # Input:
-ratings = open(...).read().split("\n")
+ratings = open(...).read().splitlines()
 ```
 
 ### Part 3.1
@@ -186,8 +187,63 @@ for bank in ratings:
     total += int(joltage)
 ```
 
+Day 4 - Printing Department
+---------------------------
+[Puzzle][d04-puzzle] — [Back to top][top]
 
+What is Advent of Code without a **grid**-question and this year we are given the positioning of large **rolls** of paper
+within the printing department of the elves:
 
+```python
+# Input:
+grid = [list(row) for row in open(...).read().splitlines()]
+```
+
+### Part 4.1
+
+To find the total number of rolls that can currently be accessed by the forklifts, we simply loop over the width (`X`)
+and length (`Y`) of the grid and given a roll (`@`) count the adjacent rolls:
+
+```python
+rolls = 0
+for x in range(X := len(grid[0])):
+    for y in range(Y := len(grid)):
+        if grid[x][y] == '@':
+            count = 0
+            for i in [-1,0,1]:
+                for j in [-1,0,1]:
+                        if 0<=(x+i)<X and 0<=(y+j)<Y and grid[x+i][y+j] == '@':
+                            count += 1
+            if count <= 4:
+                rolls += 1
+```
+Remember to make sure we are still inside the grid when evaluating the adjacent spots, thus `0<=(x+i)<X` and `0<=(y+j)<Y` 
+should hold!
+
+### Part 4.2
+
+The problem extension is to update the grid by removing the rolls of paper that can be accessed and to then continue
+searching for new accessible rolls. This simply means we need to add a while-loop to our previous code and break if
+no more additional rolls were moved:
+
+```python
+rolls = 0
+while True:
+    changed = False
+    for x in range(X := len(grid[0])):
+        for y in range(Y := len(grid)):
+            if grid[x][y] == '@':
+                count = 0
+                for i in [-1,0,1]:
+                    for j in [-1,0,1]:
+                            if 0<=(x+i)<X and 0<=(y+j)<Y and grid[x+i][y+j] == '@':
+                                count += 1
+                if count <= 4:
+                    rolls += 1
+                    grid[x][y], changed = '.', True
+    if not changed:
+        break
+```
 
 [aoc-2025]: https://adventofcode.com/2025
 
@@ -196,10 +252,12 @@ for bank in ratings:
 [d01]: #day-1---secret-entrance
 [d02]: #day-2---gift-shop
 [d03]: #day-3---lobby
+[d04]: #day-4---printing-department
 
 [d01-puzzle]: https://adventofcode.com/2025/day/1
 [d02-puzzle]: https://adventofcode.com/2025/day/2
 [d03-puzzle]: https://adventofcode.com/2025/day/3
+[d04-puzzle]: https://adventofcode.com/2025/day/4
 
 [mod-info]: https://en.wikipedia.org/wiki/Modulo
 [max-info]: https://docs.python.org/3/library/functions.html#max
