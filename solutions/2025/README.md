@@ -212,12 +212,12 @@ for x in range(X := len(grid[0])):
             count = 0
             for i in [-1,0,1]:
                 for j in [-1,0,1]:
-                        if 0<=(x+i)<X and 0<=(y + j)<Y and grid[x+i][y+j] == '@':
+                        if 0<=(x+i)<X and 0<=(y+j)<Y and grid[x+i][y+j] == '@':
                             count += 1
             if count <= 4:
                 rolls += 1
 ```
-Remember to make sure we are still inside the grid when evaluating the adjacent spots, thus `0<=(x+i)<X` and `0<=(y + j)<Y` 
+Remember to make sure we are still inside the grid when evaluating the adjacent spots, thus `0<=(x+i)<X` and `0<=(y+j)<Y` 
 should hold!
 
 ### Part 4.2
@@ -236,7 +236,7 @@ while True:
                 count = 0
                 for i in [-1,0,1]:
                     for j in [-1,0,1]:
-                            if 0<=(x+i)<X and 0<=(y + j)<Y and grid[x+i][y+j] == '@':
+                            if 0<=(x+i)<X and 0<=(y+j)<Y and grid[x+i][y+j] == '@':
                                 count += 1
                 if count <= 4:
                     rolls += 1
