@@ -18,6 +18,7 @@ Table of Contents
 - [Day 2 - Gift Shop][d02]
 - [Day 3 - Lobby][d03]
 - [Day 4 - Printing Department][d04]
+- [Day 5 - Cafeteria][d05]
 
 Signature Moves
 ---------------
@@ -245,6 +246,52 @@ while True:
         break
 ```
 
+Day 5 - Cafeteria
+-----------------
+[Puzzle][d05-puzzle] — [Back to top][top]
+
+We are given a list of fresh ingredient **ID ranges** and a list of available **ingredient IDs** that we can use to help
+the elves identify the spoiled ingredients:
+
+```python
+# Input:
+ranges, ingredients = open(...).read().split("\n\n")
+```
+
+### Part 5.1
+
+First we need to identify the amount of available fresh ingredients, which you can calculate by simply looping over the
+available ingredients and evaluating if its ID is within one of the specified ranges:
+
+```python
+total = 0
+R = [tuple(map(int,r.split('-'))) for r in ranges.splitlines()]
+for ID in ingredients.splitlines():
+    for (start, end) in R:
+        if start <= int(ID) <= end:
+            total += 1
+            break
+```
+
+
+### Part 5.2
+
+Now we are only interested in the number of total unique fresh ingredients. The number of IDs within a range is simply 
+`end - start + 1`, however since the ranges can overlap we cannot just calculate this for each range and call it a day. 
+The trick is to sort our list of ranges on their starting positions, as this allows us to sweep from left to right and 
+only add new, previously unseen IDs to our total count:
+
+```python
+total, position = 0, 0
+R = sorted([tuple(map(int,r.split('-'))) for r in ranges.splitlines()])
+for (start, end) in R:
+    if position >= start:
+        start = position + 1
+    if start <= end:
+        total += end - start + 1
+    position = max(position, end)
+```
+
 [aoc-2025]: https://adventofcode.com/2025
 
 [top]: #advent-of-code-2025-solutions
@@ -253,11 +300,13 @@ while True:
 [d02]: #day-2---gift-shop
 [d03]: #day-3---lobby
 [d04]: #day-4---printing-department
+[d05]: #day-5---cafeteria
 
 [d01-puzzle]: https://adventofcode.com/2025/day/1
 [d02-puzzle]: https://adventofcode.com/2025/day/2
 [d03-puzzle]: https://adventofcode.com/2025/day/3
 [d04-puzzle]: https://adventofcode.com/2025/day/4
+[d05-puzzle]: https://adventofcode.com/2025/day/5
 
 [mod-info]: https://en.wikipedia.org/wiki/Modulo
 [max-info]: https://docs.python.org/3/library/functions.html#max
