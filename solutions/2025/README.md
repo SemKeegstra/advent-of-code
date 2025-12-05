@@ -300,7 +300,7 @@ for (start, end) in R:
 [d02]: #day-2---gift-shop
 [d03]: #day-3---lobby
 [d04]: #day-4---printing-department
-[d04]: #day-5---cafeteria
+[d05]: #day-5---cafeteria
 
 [d01-puzzle]: https://adventofcode.com/2025/day/1
 [d02-puzzle]: https://adventofcode.com/2025/day/2
