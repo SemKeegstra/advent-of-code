@@ -327,7 +327,7 @@ for problem in zip(*problems):
 
 ### Part 6.2
 
-Now the problem seems to become quite complex as the white spaces are actually important now and the numbers should be 
+Now the problem seems to become quite complex as the white spaces are actually important and the numbers should be 
 read from top to bottom. However, when we use the same transpose as before on the raw strings we actually get an
 interesting view:
 
