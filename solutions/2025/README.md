@@ -19,6 +19,7 @@ Table of Contents
 - [Day 3 - Lobby][d03]
 - [Day 4 - Printing Department][d04]
 - [Day 5 - Cafeteria][d05]
+- [Day 6 - Trash Compactor][d06]
 
 Signature Moves
 ---------------
@@ -292,6 +293,71 @@ for (start, end) in R:
     position = max(position, end)
 ```
 
+Day 6 - Trash Compactor
+-----------------------
+[Puzzle][d06-puzzle] — [Back to top][top]
+
+While the older [cephalopods][pod-info] are trying to break us out of the garbage chute, we are given the **math homework** of the 
+youngest one:
+
+```python
+# Input:
+homework = open(...).read().splitlines()
+```
+
+### Part 6.1
+
+Note that the individual **math problems** should actually be read as columns instead of the rows we retrieved.
+Fortunately, we can simply transpose our view using the built-in [zip function][zip-info]:
+
+|     | **BEFORE**                       | **AFTER**                          |
+|-----|----------------------------------|------------------------------------|
+| *0* | `['123', '328', '51', '64']`     | `('123', '45', '6', '*')`          |
+| *1* |`['45', '64', '387', '23']`      | `('328', '64', '98', '*')`         |
+| *2* |`['6', '98', '215', '314']`      | `('51', '387', '215', '+')`        |
+| *3* |`['*', '*', '+', '+']`           | `('64', '23', '314', '+')`         |
+
+This allows us to keep our solution short and elegant:
+
+```python
+problems, total = [line.split() for line in homework], 0
+for problem in zip(*problems):
+    total += eval(problem[-1].join(problem[:-1]))
+```
+
+### Part 6.2
+
+Now the problem seems to become quite complex as the white spaces are actually important now and the numbers should be 
+read from top to bottom. However, when we use the same transpose as before on the raw strings we actually get an
+interesting view:
+
+|     | **LINES**         |
+|-----|-------------------|
+| *0* | `('1', ' ', ' ')` |
+| *1* | `('2', '4', ' ')` |
+| *2* | `('3', '5', '6')` |
+| *3* | `(' ', ' ', ' ')` |
+| *4* | `('3', '6', '9')` |
+
+We can simply keep **track** of all the current numbers and when we encounter a 'white line' apply the corresponding
+**operator**:
+
+
+```python
+total, tracked_numbers = 0, []
+problems, operators = [line + ' ' for line in homework[:-1]], homework[-1].split()
+for problem in zip(*problems):
+    if all(n == ' ' for n in problem):
+        total += eval(operators[0].join(tracked_numbers))
+        tracked_numbers = []
+        operators.pop(0)
+    else:
+        tracked_numbers.append("".join(x for x in problem if x.strip()))
+```
+
+Adding a space behind every string at the start is important as this creates an additional white line, otherwise the code
+will ignore the last problem.
+
 [aoc-2025]: https://adventofcode.com/2025
 
 [top]: #advent-of-code-2025-solutions
@@ -301,13 +367,19 @@ for (start, end) in R:
 [d03]: #day-3---lobby
 [d04]: #day-4---printing-department
 [d05]: #day-5---cafeteria
+[d06]: #day-6---trash-compactor
 
 [d01-puzzle]: https://adventofcode.com/2025/day/1
 [d02-puzzle]: https://adventofcode.com/2025/day/2
 [d03-puzzle]: https://adventofcode.com/2025/day/3
 [d04-puzzle]: https://adventofcode.com/2025/day/4
 [d05-puzzle]: https://adventofcode.com/2025/day/5
+[d06-puzzle]: https://adventofcode.com/2025/day/6
 
 [mod-info]: https://en.wikipedia.org/wiki/Modulo
 [max-info]: https://docs.python.org/3/library/functions.html#max
+[zip-info]: https://docs.python.org/3/library/functions.html#zip
+
+
 [greedy-info]: https://en.wikipedia.org/wiki/Greedy_algorithm
+[pod-info]: https://en.wikipedia.org/wiki/Cephalopod
