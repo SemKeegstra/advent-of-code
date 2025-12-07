@@ -20,6 +20,7 @@ Table of Contents
 - [Day 4 - Printing Department][d04]
 - [Day 5 - Cafeteria][d05]
 - [Day 6 - Trash Compactor][d06]
+- [Day 7 - Laboratories][d07]
 
 Signature Moves
 ---------------
@@ -358,6 +359,83 @@ for problem in zip(*problems):
 Adding a space behind every string at the start is important as this creates an additional white line, otherwise the code
 will ignore the last problem.
 
+Day 7 - Laboratories
+--------------------
+[Puzzle][d07-puzzle] — [Back to top][top]
+
+We are given a **diagram** of the tachyon manifolds, which should help us fix the teleportation device:
+
+```python
+# Input:
+diagram = [list(line) for line in open(path, "r").read().splitlines()]
+```
+
+### Part 7.1
+
+The first part basically asks us to simulate the downward movements of the tachyon **beams** such that we can count the
+total amount of **splits**. One approach is to use a [queue][q-info] to trace the movements:
+
+
+```python
+beams, splits = deque(), set()
+beams.append((1, diagram[0].index('S')))
+while beams:
+    r, c = beams.popleft()
+    if (0 <= r + 1 < len(diagram) and 0 <= c < len(diagram[0]) and (r+1,c) not in splits):
+        if diagram[r + 1][c] == '.':
+            beams.append((r+1,c))
+        elif diagram[r + 1][c] == '^':
+            splits.add((r+1, c))
+            beams.append((r+1, c-1))
+            beams.append((r+1, c+1))
+```
+
+### Part 7.2
+
+Now we are actually interested in the number of unique **timelines** the tachyon can take if it can go either direction 
+when it encounters a `^`. This is a classic example of a problem we can solve using a [backtracking algorithm][backtrack-info]:
+
+```python
+def backtrack(grid: list[list], r: int, c: int) -> int:
+    if not (0 <= r < len(grid) and 0 <= c < len(grid[0])):
+        return 0
+    elif r == len(grid) - 1:
+        return 1
+    elif grid[r+1][c] == '.':
+        return backtrack(grid, r+1, c)
+    elif grid[r+1][c] == '^':
+        return backtrack(grid, r+1, c-1) + backtrack(grid, r+1, c+1)
+```
+
+The above function works fine for small grids, but it actually uses a **naive recursion** approach instead of **dynamic**.
+Why is this a problem? Because while you think you are traversing a tree, the problem is actually a [Directed Acyclic Graph (DAG)][dag-info], 
+meaning it has overlapping sub-problems and therefore we are recomputing the entire future again from scratch for every timeline.
+
+Fortunately, we can account for this via [memoization][memo-info] by caching known future positions and thus transforming
+our time complexity from exponential `O(2^R)` to linear-*ish* `O(R·C)`:
+```python
+def backtrack(grid: list[list], r: int, c: int, cache: dict) -> int:
+    if not (0 <= r < len(grid) and 0 <= c < len(grid[0])):
+        return 0
+    elif (r, c) in cache:
+        return cache[(r, c)]
+    elif r == len(grid) - 1:
+        return 1
+    elif grid[r+1][c] == '.':
+        cache[(r+1,c)] = backtrack(grid, r+1, c, cache)
+        return cache[(r+1,c)]
+    elif grid[r+1][c] == '^':
+        cache[(r+1,c)] = backtrack(grid, r+1, c-1, cache) + backtrack(grid, r+1, c+1, cache)
+        return cache[(r+1,c)]
+```
+
+Allowing us to instantly find our answer by just plugging in the starting position:
+
+```python
+# Answer:
+backtrack(grid=diagram, r=1, c=diagram[0].index('S'), cache={})
+```
+
 [aoc-2025]: https://adventofcode.com/2025
 
 [top]: #advent-of-code-2025-solutions
@@ -368,6 +446,7 @@ will ignore the last problem.
 [d04]: #day-4---printing-department
 [d05]: #day-5---cafeteria
 [d06]: #day-6---trash-compactor
+[d07]: #day-7---laboratories
 
 [d01-puzzle]: https://adventofcode.com/2025/day/1
 [d02-puzzle]: https://adventofcode.com/2025/day/2
@@ -375,11 +454,16 @@ will ignore the last problem.
 [d04-puzzle]: https://adventofcode.com/2025/day/4
 [d05-puzzle]: https://adventofcode.com/2025/day/5
 [d06-puzzle]: https://adventofcode.com/2025/day/6
+[d07-puzzle]: https://adventofcode.com/2025/day/7
 
 [mod-info]: https://en.wikipedia.org/wiki/Modulo
 [max-info]: https://docs.python.org/3/library/functions.html#max
 [zip-info]: https://docs.python.org/3/library/functions.html#zip
-
+[q-info]: https://docs.python.org/3/library/collections.html#deque-objects
 
 [greedy-info]: https://en.wikipedia.org/wiki/Greedy_algorithm
+[backtrack-info]: https://en.wikipedia.org/wiki/Backtracking
+[memo-info]: https://en.wikipedia.org/wiki/Memoization
+[dag-info]: https://en.wikipedia.org/wiki/Directed_acyclic_graph
+
 [pod-info]: https://en.wikipedia.org/wiki/Cephalopod
