@@ -21,6 +21,7 @@ Table of Contents
 - [Day 5 - Cafeteria][d05]
 - [Day 6 - Trash Compactor][d06]
 - [Day 7 - Laboratories][d07]
+- [Day 8 - Playground][d08]
 
 Signature Moves
 ---------------
@@ -367,7 +368,7 @@ We are given a **diagram** of the tachyon manifolds, which should help us fix th
 
 ```python
 # Input:
-diagram = [list(line) for line in open(path, "r").read().splitlines()]
+diagram = [list(line) for line in open(...).read().splitlines()]
 ```
 
 ### Part 7.1
@@ -436,6 +437,63 @@ Allowing us to instantly find our answer by just plugging in the starting positi
 backtrack(grid=diagram, r=1, c=diagram[0].index('S'), cache={})
 ```
 
+Day 8 - Playground
+------------------
+[Puzzle][d08-puzzle] — [Back to top][top]
+
+We are given the Cartesian coordinates of all the electrical **junction boxes** which will help us aid the elves in
+optimally connecting them:
+
+```python
+boxes = [tuple(map(int, line.split(','))) for line in open(...)]
+```
+
+Note that we need to calculate the [straight-line distance][dist-info] in three dimensions, which can be done as follows:
+
+```python
+def euclidean(p: tuple, q: tuple) -> float:
+    return ((p[0] - q[0])**2 + (p[1] - q[1])**2 + (p[2] - q[2])**2)**0.5
+```
+Since only the relative magnitude is important and not the actual distance, we could skip the square-root.
+
+### Part 8.1
+
+We are asked to simulate the creation process of the **circuits**, starting with only the first 1.000 boxes. Unfortunately,
+we cannot solve this without calculating the **distances** between all possible box combinations. However, we can make our
+lives a lot easier by storing these distances in a sorted list. This allows us to just go through the list from top
+to bottom and connect the circuits of the boxes in question (if possible):
+
+```python
+circuits = [[box] for box in boxes]
+distance = sorted([(euclidean(b1,b2), b1, b2) for i, b1 in enumerate(boxes) for b2 in boxes[i+1:]])
+for _ in range(1000):
+    shortest_group = distance[0][1:]
+    c1 = next(i for i, c in enumerate(circuits) if shortest_group[0] in c)
+    c2 = next(i for i, c in enumerate(circuits) if shortest_group[1] in c)
+    if c1 != c2:
+        circuits[min(c1,c2)] += circuits.pop(max(c1,c2))
+    distance.pop(0)
+total = (lambda x: x[0] * x[1] * x[2])(sorted(map(len, circuits), reverse=True)[:3])
+```
+
+### Part 8.2
+
+Now we are only interested in the **horizontal distance** (so x-coordinates) between the final two junction boxes. This 
+means our code stays almost exactly the same, except now we just keep going until there is 1 circuit left:
+
+```python
+circuits = [[box] for box in boxes]
+distance = sorted([(euclidean(b1,b2), b1, b2) for i, b1 in enumerate(boxes) for b2 in boxes[i+1:]])
+while len(circuits) != 1:
+    shortest_group = distance[0][1:]
+    c1 = next(i for i, c in enumerate(circuits) if shortest_group[0] in c)
+    c2 = next(i for i, c in enumerate(circuits) if shortest_group[1] in c)
+    if c1 != c2:
+        circuits[min(c1,c2)] += circuits.pop(max(c1,c2))
+    distance.pop(0)
+horizontal_distance = s[0][0] * s[1][0]
+```
+
 [aoc-2025]: https://adventofcode.com/2025
 
 [top]: #advent-of-code-2025-solutions
@@ -447,6 +505,7 @@ backtrack(grid=diagram, r=1, c=diagram[0].index('S'), cache={})
 [d05]: #day-5---cafeteria
 [d06]: #day-6---trash-compactor
 [d07]: #day-7---laboratories
+[d08]: #day-8---playground
 
 [d01-puzzle]: https://adventofcode.com/2025/day/1
 [d02-puzzle]: https://adventofcode.com/2025/day/2
@@ -455,6 +514,7 @@ backtrack(grid=diagram, r=1, c=diagram[0].index('S'), cache={})
 [d05-puzzle]: https://adventofcode.com/2025/day/5
 [d06-puzzle]: https://adventofcode.com/2025/day/6
 [d07-puzzle]: https://adventofcode.com/2025/day/7
+[d08-puzzle]: https://adventofcode.com/2025/day/8
 
 [mod-info]: https://en.wikipedia.org/wiki/Modulo
 [max-info]: https://docs.python.org/3/library/functions.html#max
@@ -465,5 +525,6 @@ backtrack(grid=diagram, r=1, c=diagram[0].index('S'), cache={})
 [backtrack-info]: https://en.wikipedia.org/wiki/Backtracking
 [memo-info]: https://en.wikipedia.org/wiki/Memoization
 [dag-info]: https://en.wikipedia.org/wiki/Directed_acyclic_graph
+[dist-info]: https://en.wikipedia.org/wiki/Euclidean_distance
 
 [pod-info]: https://en.wikipedia.org/wiki/Cephalopod
