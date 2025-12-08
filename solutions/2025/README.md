@@ -367,7 +367,7 @@ We are given a **diagram** of the tachyon manifolds, which should help us fix th
 
 ```python
 # Input:
-diagram = [list(line) for line in open(path, "r").read().splitlines()]
+diagram = [list(line) for line in open(...).read().splitlines()]
 ```
 
 ### Part 7.1
