@@ -22,6 +22,7 @@ Table of Contents
 - [Day 6 - Trash Compactor][d06]
 - [Day 7 - Laboratories][d07]
 - [Day 8 - Playground][d08]
+- [Day 9 - Movie Theater][d09]
 
 Signature Moves
 ---------------
@@ -494,6 +495,31 @@ while len(circuits) != 1:
 horizontal_distance = s[0][0] * s[1][0]
 ```
 
+Day 9 - Movie Theater
+---------------------
+[Puzzle][d09-puzzle] — [Back to top][top]
+
+We are given the list of (x, y) coordinates corresponding to the **red tiles** in the big grid:
+
+```python
+red_tiles = [tuple(map(int,line.split(','))) for line in open(...)]
+```
+
+### Part 9.1
+
+To find the biggest possible rectangle using 2 red tiles (`a` & `b`) as its opposite corners, we can simply loop over 
+all possible combinations and calculate the **area** of the square:
+
+```python
+max((abs(a[0]-b[0]+1))*(abs(a[1]-b[1]+1)) for i, a in enumerate(red_tiles) for b in red_tiles[i+1:])
+```
+
+### Part 9.2
+
+```python
+
+```
+
 [aoc-2025]: https://adventofcode.com/2025
 
 [top]: #advent-of-code-2025-solutions
@@ -506,6 +532,7 @@ horizontal_distance = s[0][0] * s[1][0]
 [d06]: #day-6---trash-compactor
 [d07]: #day-7---laboratories
 [d08]: #day-8---playground
+[d09]: #day-9---movie-theater
 
 [d01-puzzle]: https://adventofcode.com/2025/day/1
 [d02-puzzle]: https://adventofcode.com/2025/day/2
@@ -515,6 +542,7 @@ horizontal_distance = s[0][0] * s[1][0]
 [d06-puzzle]: https://adventofcode.com/2025/day/6
 [d07-puzzle]: https://adventofcode.com/2025/day/7
 [d08-puzzle]: https://adventofcode.com/2025/day/8
+[d09-puzzle]: https://adventofcode.com/2025/day/9
 
 [mod-info]: https://en.wikipedia.org/wiki/Modulo
 [max-info]: https://docs.python.org/3/library/functions.html#max
