@@ -508,17 +508,67 @@ red_tiles = [tuple(map(int,line.split(','))) for line in open(...)]
 
 ### Part 9.1
 
-To find the biggest possible rectangle using 2 red tiles (`a` & `b`) as its opposite corners, we can simply loop over 
+To find the biggest possible rectangle using 2 red tiles (`p` & `q`) as its opposite corners, we can simply loop over 
 all possible combinations and calculate the **area** of the square:
 
 ```python
-max((abs(a[0]-b[0]+1))*(abs(a[1]-b[1]+1)) for i, a in enumerate(red_tiles) for b in red_tiles[i+1:])
+area = 0
+for i, p in enumerate(red_tiles):
+    for q in red_tiles[i+1:]:
+        area = max(area, (abs(p[0]-q[0])+1)*(abs(p[1]-q[1])+1))
 ```
 
 ### Part 9.2
 
-```python
+So now we are informed that the red tiles are actually the corners of a [**polygon**][poly-info] and that we should only
+consider rectangles that completely reside inside this polygon. Thus we can completely reuse our previous code, but just
+add one extra check such that we only consider valid squares:
 
+```python
+area = 0
+for i, p in enumerate(red_tiles):
+    for q in red_tiles[i+1:]:
+        if area_in_poly(p, q):
+            area = max(area, (abs(p[0]-q[0])+1)*(abs(p[1]-q[1])+1))
+```
+
+Before we define the `area_in_poly()`, let us first initialize the **edges** of the polygon. We want to avoid saving all
+the individual points that make up the edges as the numbers in our puzzle input are rather large. Therefore, I opt for a
+normalized geometric representation of the edges, where I differentiate between horizontal and vertical edges and only 
+store the end-points:
+
+```python
+corners, horizontal_edges, vertical_edges = red_tiles + [red_tiles[0]], [], []
+for (x1, y1), (x2, y2) in zip(corners, corners[1:]):
+    if x1 == x2:
+        vertical_edges.append((x1, *sorted((y1, y2))))
+    else:
+        horizontal_edges.append((y1, *sorted((x1, x2))))
+```
+
+With that out of the way, let us now define how we check if the area of a rectangle is completely within the polygon.
+Note that we should **NOT** consider this as a [point-in-polygon (PIP)][PIP-info] problem as the rectangles in question
+are very large, hence ray tracing algorithms are off the table. Instead the geometric idea is that if a polygon passes 
+through the interior of the rectangle, then part of the rectangle is outside, even if the center is inside. So we should
+actually check if none of the edges are inside the polygon:
+
+```python
+def area_in_poly(p1: tuple[int, int], p2: tuple[int, int]) -> bool:
+    # Initialize corners:
+    (x_lo, x_hi), (y_lo, y_hi) = sorted([p1[0], p2[0]]), sorted([p1[1], p2[1]])
+    
+    # Evaluate vertical edges:
+    for x, y1, y2 in vertical_edges:
+        if x_lo < x < x_hi:
+            if max(y_lo, y1) < min(y_hi, y2):
+                return False
+                
+    # Evaluate horizontal edges:
+    for y, x1, x2 in horizontal_edges:
+        if y_lo < y < y_hi:
+            if max(x_lo, x1) < min(x_hi, x2):
+                return False 
+    return True
 ```
 
 Day 10 - Factory
@@ -533,7 +583,7 @@ operations ([`re`][re-info]) to organize it:
 
 ```python
 manual = ([],[],[])  # (lights, buttons, joltages)
-for m in open(path).read().splitlines():
+for m in open(...).read().splitlines():
     manual[0].append(list(re.search(r"\[(.*?)\]", m).group(1)))
     manual[1].append([tuple(map(int,b.split(','))) for b in re.findall(r"\((.*?)\)", m)])
     manual[2].append(list(map(int,re.search(r"\{(.*?)\}", m).group(1).split(','))))
@@ -601,6 +651,8 @@ Note that I used the built-in [`itertools`][iter-info] package of python to cons
 [q-info]: https://docs.python.org/3/library/collections.html#deque-objects
 [re-info]: https://docs.python.org/3/library/re.html
 [iter-info]: https://docs.python.org/3/library/itertools.html
+[poly-info]: https://en.wikipedia.org/wiki/Polygon
+[PIP-info]: https://en.wikipedia.org/wiki/Point_in_polygon#Ray_casting_algorithm
 
 [greedy-info]: https://en.wikipedia.org/wiki/Greedy_algorithm
 [backtrack-info]: https://en.wikipedia.org/wiki/Backtracking
