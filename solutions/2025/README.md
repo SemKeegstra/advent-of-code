@@ -23,6 +23,7 @@ Table of Contents
 - [Day 7 - Laboratories][d07]
 - [Day 8 - Playground][d08]
 - [Day 9 - Movie Theater][d09]
+- [Day 10 - Factory][d10]
 
 Signature Moves
 ---------------
@@ -520,6 +521,54 @@ max((abs(a[0]-b[0]+1))*(abs(a[1]-b[1]+1)) for i, a in enumerate(red_tiles) for b
 
 ```
 
+Day 10 - Factory
+----------------
+[Puzzle][d10-puzzle] — [Back to top][top]
+
+We are given the remaining parts of the manual for the **machines**, which includes indicator **light** diagrams,
+**button** wiring schematics, and **joltage** requirements.
+
+While the puzzle input is not structured very neatly, we can use the built-in python package for regular expression 
+operations ([`re`][re-info]) to organize it:
+
+```python
+manual = ([],[],[])  # (lights, buttons, joltages)
+for m in open(path).read().splitlines():
+    manual[0].append(list(re.search(r"\[(.*?)\]", m).group(1)))
+    manual[1].append([tuple(map(int,b.split(','))) for b in re.findall(r"\((.*?)\)", m)])
+    manual[2].append(list(map(int,re.search(r"\{(.*?)\}", m).group(1).split(','))))
+```
+
+### Part 10.1
+
+First they ask us to figure out the minimum amount of buttons you need to press to get the correct set of indicator lights
+on for each machine. It is important to note here that pressing a button twice is useless, as it just undoes itself and
+therefore cannot lead to the minimum. This makes the problem much simpler as we can just loop over a known group of 
+possible combinations. Furthermore, we can simulate the press of a button by taking the difference of two sets:
+
+```python
+total = 0
+for lights, buttons in zip(manual[0], manual[1]):
+    goal, sols = {i for i, x in enumerate(lights) if x == '#'}, []
+    for k in range(len(buttons) + 1):
+        for combo in itertools.combinations(buttons, k):
+            sol = set()
+            for btn in combo:
+                sol ^= set(btn)
+            if sol == goal:
+                sols.append(k)
+    total += min(sols)
+```
+
+Note that I used the built-in [`itertools`][iter-info] package of python to construct the set of possible button combinations.
+
+### Part 10.2
+
+```python
+
+```
+
+
 [aoc-2025]: https://adventofcode.com/2025
 
 [top]: #advent-of-code-2025-solutions
@@ -533,6 +582,7 @@ max((abs(a[0]-b[0]+1))*(abs(a[1]-b[1]+1)) for i, a in enumerate(red_tiles) for b
 [d07]: #day-7---laboratories
 [d08]: #day-8---playground
 [d09]: #day-9---movie-theater
+[d10]: #day-10---factory
 
 [d01-puzzle]: https://adventofcode.com/2025/day/1
 [d02-puzzle]: https://adventofcode.com/2025/day/2
@@ -543,11 +593,14 @@ max((abs(a[0]-b[0]+1))*(abs(a[1]-b[1]+1)) for i, a in enumerate(red_tiles) for b
 [d07-puzzle]: https://adventofcode.com/2025/day/7
 [d08-puzzle]: https://adventofcode.com/2025/day/8
 [d09-puzzle]: https://adventofcode.com/2025/day/9
+[d10-puzzle]: https://adventofcode.com/2025/day/10
 
 [mod-info]: https://en.wikipedia.org/wiki/Modulo
 [max-info]: https://docs.python.org/3/library/functions.html#max
 [zip-info]: https://docs.python.org/3/library/functions.html#zip
 [q-info]: https://docs.python.org/3/library/collections.html#deque-objects
+[re-info]: https://docs.python.org/3/library/re.html
+[iter-info]: https://docs.python.org/3/library/itertools.html
 
 [greedy-info]: https://en.wikipedia.org/wiki/Greedy_algorithm
 [backtrack-info]: https://en.wikipedia.org/wiki/Backtracking
