@@ -626,14 +626,14 @@ Day 11 - Reactor
 We are given a list of the **devices** in the server rack and their data connection to other devices in the rack:
 
 ```python
-devices = {k: v.strip().split() for k, v in (l.split(":", 1) for l in open(path).read().splitlines())}
+devices = {k: v.strip().split() for k, v in (l.split(":", 1) for l in open(...).read().splitlines())}
 ```
 
 ### Part 11.1
 
 It is clear that we should interpret this as a graph question, where each device represents a **node** in the graph. 
 Since data only ever flows from a device through its outputs, we can also conclude that we are dealing with another 
-[DAG][dag-info]. Long story short: *calculate the # of unique paths starting at node* `you` *and 
+[DAG][dag-info] (so no loops). Long story short: *calculate the # of unique paths starting at node* `you` *and 
 ending at node `out`*. Such a problem can be solved using a recursive implementation of [Depth-First Search (DFS)][DFS-info]:
 
 ```python

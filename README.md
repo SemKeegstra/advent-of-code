@@ -25,6 +25,20 @@ two parts (the second part is only unlocked after solving the first one). It is 
 here [here][aoc-support].
 
 ---
+📋 Personal Rules
+-----------------
+To keep the challenge authentic and enjoyable, I follow a few personal rules while solving the Advent of Code puzzles:
+1. **No looking up answers**:
+   - Always solve the puzzles independently.
+2. **References only when necessary**:
+   - May only look up documentation (e.g. algorithms) if I cannot recall some details by heart.
+   - Or *after* solving a puzzle to see whether my approach could be improved (this will be mentioned).
+3. **Minimize imports**: 
+   - The real goal is to write solutions that are as close to library-less as possible.
+   - If really needed, I only allow myself to use the [Python standard library][py-standard].
+4. **Elegant one-liners**: 
+   - Not really a rule, but I enjoy finding clean, compact one-liners. Mostly for reading and structuring the puzzle input.
+---
 📚 Overview
 -----------
 - **AoC 2025**: [solutions][2025-sol]
@@ -32,6 +46,7 @@ here [here][aoc-support].
 
 
 [python-site]: https://www.python.org/
+[py-standard]: https://docs.python.org/3/library/index.html
 [aoc-site]:    https://adventofcode.com/
 [aoc-about]:   https://adventofcode.com/2019/about
 [aoc-eric]:    https://twitter.com/ericwastl
