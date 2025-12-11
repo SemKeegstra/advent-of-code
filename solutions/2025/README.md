@@ -24,6 +24,7 @@ Table of Contents
 - [Day 8 - Playground][d08]
 - [Day 9 - Movie Theater][d09]
 - [Day 10 - Factory][d10]
+- [Day 11 - Reactor][d11]
 
 Signature Moves
 ---------------
@@ -618,6 +619,46 @@ Note that I used the built-in [`itertools`][iter-info] package of python to cons
 
 ```
 
+Day 11 - Reactor
+----------------
+[Puzzle][d11-puzzle] — [Back to top][top]
+
+We are given a list of the **devices** in the server rack and their data connection to other devices in the rack:
+
+```python
+devices = {k: v.strip().split() for k, v in (l.split(":", 1) for l in open(path).read().splitlines())}
+```
+
+### Part 11.1
+
+It is clear that we should interpret this as a graph question, where each device represents a **node** in the graph. 
+Since data only ever flows from a device through its outputs, we can also conclude that we are dealing with another 
+[DAG][dag-info]. Long story short: *calculate the # of unique paths starting at node* `you` *and 
+ending at node `out`*. Such a problem can be solved using a recursive implementation of [Depth-First Search (DFS)][DFS-info]:
+
+```python
+@cache
+def n_paths(start, end):
+    if start == end:
+        return 1
+    else:
+        return sum(n_paths(node, end) for node in devices[start])
+```
+
+Note that I am again speeding up the process via [memoization][memo-info] by [caching][cache-info] paths in the graph
+that we already walked.
+
+### Part 11.2
+
+After two days of quite complex second parts, we are actually getting a breather as we do not have to write any new code! 
+They ask us for the number of unique paths from `svr` to `out` that also include the nodes `fft` and `dac`. But this is
+simply equal to:
+
+```python
+n_paths('svr', 'fft') * n_paths('fft', 'dac') * n_paths('dac', 'out')
+```
+
+We did, however, had to add `out` to the `devices` object for this to work.
 
 [aoc-2025]: https://adventofcode.com/2025
 
@@ -633,6 +674,7 @@ Note that I used the built-in [`itertools`][iter-info] package of python to cons
 [d08]: #day-8---playground
 [d09]: #day-9---movie-theater
 [d10]: #day-10---factory
+[d11]: #day-11---reactor
 
 [d01-puzzle]: https://adventofcode.com/2025/day/1
 [d02-puzzle]: https://adventofcode.com/2025/day/2
@@ -644,6 +686,7 @@ Note that I used the built-in [`itertools`][iter-info] package of python to cons
 [d08-puzzle]: https://adventofcode.com/2025/day/8
 [d09-puzzle]: https://adventofcode.com/2025/day/9
 [d10-puzzle]: https://adventofcode.com/2025/day/10
+[d11-puzzle]: https://adventofcode.com/2025/day/11
 
 [mod-info]: https://en.wikipedia.org/wiki/Modulo
 [max-info]: https://docs.python.org/3/library/functions.html#max
@@ -651,13 +694,16 @@ Note that I used the built-in [`itertools`][iter-info] package of python to cons
 [q-info]: https://docs.python.org/3/library/collections.html#deque-objects
 [re-info]: https://docs.python.org/3/library/re.html
 [iter-info]: https://docs.python.org/3/library/itertools.html
-[poly-info]: https://en.wikipedia.org/wiki/Polygon
-[PIP-info]: https://en.wikipedia.org/wiki/Point_in_polygon#Ray_casting_algorithm
+[cache-info]: https://docs.python.org/3/library/functools.html
+
 
 [greedy-info]: https://en.wikipedia.org/wiki/Greedy_algorithm
 [backtrack-info]: https://en.wikipedia.org/wiki/Backtracking
 [memo-info]: https://en.wikipedia.org/wiki/Memoization
 [dag-info]: https://en.wikipedia.org/wiki/Directed_acyclic_graph
 [dist-info]: https://en.wikipedia.org/wiki/Euclidean_distance
+[poly-info]: https://en.wikipedia.org/wiki/Polygon
+[PIP-info]: https://en.wikipedia.org/wiki/Point_in_polygon#Ray_casting_algorithm
+[DFS-info]: https://en.wikipedia.org/wiki/Depth-first_search
 
 [pod-info]: https://en.wikipedia.org/wiki/Cephalopod
