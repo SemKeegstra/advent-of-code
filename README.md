@@ -37,7 +37,7 @@ To keep the challenge authentic and enjoyable, I follow a few personal rules whi
    - The real goal is to write solutions that are as close to library-less as possible.
    - If really needed, I only allow myself to use the [Python standard library][py-standard].
 4. **Elegant one-liners**: 
-   - Not really a rule, but I enjoy finding clean, compact one-liners. Mostly for reading/structuring the puzzle input.
+   - Not really a rule, but I enjoy finding clean, compact one-liners. Mostly for reading/structuring the input.
 ---
 📚 Overview
 -----------

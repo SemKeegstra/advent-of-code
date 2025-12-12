@@ -13,7 +13,7 @@ To save Christmas, the Elves need us to finish decorating the North Pole by Dece
 Table of Contents
 -----------------
 
-- [Signature Moves][sig]
+- [Highlights][hig]
 - [Day 1 - Secret Entrance][d01]
 - [Day 2 - Gift Shop][d02]
 - [Day 3 - Lobby][d03]
@@ -26,14 +26,15 @@ Table of Contents
 - [Day 10 - Factory][d10]
 - [Day 11 - Reactor][d11]
 
-Signature Moves
----------------
-Each year the puzzles seem to have something different in common in terms of steps needed to find the solution. Often
-these steps can easily be performed using built-in python features and therefore AoC serves as a good refresher of methods
-you tend to forget about. Below is an overview of methods/ideas that define 2025s signature:
+Highlights
+----------
 
-- **Division Components**: The use of the modulo operator (`%`) and/or floor division (`//`) to quickly receive and/or remove
-                           the rest terms of a division.
+Each Advent of Code season comes with its own set of patterns, tricks, and small *aha* moments. Below is an overview
+of some of the more interesting ideas I ended up implementing this year (e.g. specific algorithms). Many of these were
+things I (re)discovered along the way, and writing them down here helps capture what made this year's puzzles especially
+fun and sometimes even enlightening:
+
+- ...
 
 Day 1 - Secret Entrance
 -----------------------
@@ -663,7 +664,7 @@ We did, however, had to add `out` to the `devices` object for this to work.
 [aoc-2025]: https://adventofcode.com/2025
 
 [top]: #advent-of-code-2025-solutions
-[sig]: #signature-moves
+[hig]: #highlights
 [d01]: #day-1---secret-entrance
 [d02]: #day-2---gift-shop
 [d03]: #day-3---lobby
