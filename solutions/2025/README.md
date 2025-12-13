@@ -600,15 +600,15 @@ possible combinations. Furthermore, we can simulate the press of a button by tak
 
 ```python
 total = 0
-for lights, buttons in zip(manual[0], manual[1]):
-    goal, sols = {i for i, x in enumerate(lights) if x == '#'}, []
+for idx, (lights, buttons) in enumerate(zip(manual[0], manual[1])):
+    goal, sols = set(idx for idx, x in enumerate(lights) if x == '#'), []
     for k in range(len(buttons) + 1):
         for combo in itertools.combinations(buttons, k):
             sol = set()
             for btn in combo:
                 sol ^= set(btn)
             if sol == goal:
-                sols.append(k)
+                sols.append(k)  
     total += min(sols)
 ```
 
