@@ -629,6 +629,7 @@ My initial thought was, there are too many patterns to brute force this problem,
 
 We can rewrite the buttons and joltages as a linear system, then convert it to an [augmented matrix][aug-info] and 
 finally reduce it to its [Row Echelon Form (REF)][REF-info] which should be solvable:
+
 $$
 \begin{aligned}
 b_4 + b_5 &= 3 \\
