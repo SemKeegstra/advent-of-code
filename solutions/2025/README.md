@@ -620,16 +620,16 @@ Now we are asked to figure out the minimum amount of **buttons** you need to pre
 for each machine. This also means that pressing a button twice is actually possible now, significantly increasing the 
 complexity of this problem. 
 
-My initial thought was, we need to interpret this as a [system of linear equations][sle-info] and solve that. For instance, 
-given the following example machine **manual**:
+My initial thought was, we can solve this as a [system of linear equations][sle-info]. For example, given one of the
+example **manuals**:
 
 ```python
 "[.##.] (3) (1,3) (2) (2,3) (0,2) (0,1) {3,5,4,7}"
 ```
 
-We can write this as a system of equations, convert it to an [augmented matrix][aug-info] and finally reduce it to 
-its [Row Echelon Form (REF)][REF-info]:
-
+We can rewrite the buttons and joltages as a linear system, then convert it to an [augmented matrix][aug-info] and 
+finally reduce it to its [Row Echelon Form (REF)][REF-info] which should be solvable and have a minimum 
+[Integer Linear Programming (ILP)][ILP-info] solution:
 
 $$
 \begin{aligned}
@@ -796,5 +796,6 @@ We did, however, had to add `out` to the `devices` object for this to work.
 [sle-info]: https://en.wikipedia.org/wiki/System_of_linear_equations
 [aug-info]: https://en.wikipedia.org/wiki/Augmented_matrix
 [REF-info]: https://en.wikipedia.org/wiki/Row_echelon_form
+[ILP-info]: https://en.wikipedia.org/wiki/Integer_programming
 
 [pod-info]: https://en.wikipedia.org/wiki/Cephalopod
