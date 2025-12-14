@@ -640,20 +640,20 @@ b_0 + b_1 + b_3 &= 7
 \end{aligned}
 \quad \Longrightarrow \quad
 \left[
-\begin{array}{cccccc|c}
-0 & 0 & 0 & 1 & 1 & 0 & 3 \\
-0 & 1 & 0 & 0 & 1 & 0 & 5 \\
-0 & 0 & 1 & 1 & 0 & 0 & 4 \\
-1 & 1 & 0 & 1 & 0 & 0 & 7
+\begin{array}{ccccc|c}
+0 & 0 & 0 & 1 & 1  & 3 \\
+0 & 1 & 0 & 0 & 1  & 5 \\
+0 & 0 & 1 & 1 & 0  & 4 \\
+1 & 1 & 0 & 1 & 0  & 7
 \end{array}
 \right]
 \quad \Longrightarrow \quad
 \left[
-\begin{array}{cccccc|c}
-1 & 0 & 0 & 0 & -1 & 0 & 2 \\
-0 & 1 & 0 & 0 & 1 & 0 & 5 \\
-0 & 0 & 1 & 0 & -1 & 0 & 1 \\
-0 & 0 & 0 & 1 & 1 & 0 & 3
+\begin{array}{ccccc|c}
+1 & 0 & 0 & 0 & -1 & 2 \\
+0 & 1 & 0 & 0 & 1 & 5 \\
+0 & 0 & 1 & 0 & -1 & 1 \\
+0 & 0 & 0 & 1 & 1 & 3
 \end{array}
 \right]
 $$
