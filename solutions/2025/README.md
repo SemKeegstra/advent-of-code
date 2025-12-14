@@ -26,6 +26,7 @@ Table of Contents
 - [Day 10 - Factory][d10]
 - [Day 11 - Reactor][d11]
 - [Day 12 - Christmas Tree Farm][d12]
+- [Calendar][cal]
 
 Highlights
 ----------
@@ -810,6 +811,12 @@ for grid, presents in trees:
 After taking a closer look at the puzzle input, I realized that these grids are more simplistic than the example. In 
 fact, the grids in which presents cannot be placed naively due to lack of space also cannot fit presents any other way...
 
+Calendar
+--------
+[Back to top][top]
+
+<p align="center"><img src="../../_static/gifs/AOC_2025.gif" alt="Advent of Code 2025 calendar"></p>
+
 
 [aoc-2025]: https://adventofcode.com/2025
 
@@ -827,6 +834,7 @@ fact, the grids in which presents cannot be placed naively due to lack of space 
 [d10]: #day-10---factory
 [d11]: #day-11---reactor
 [d12]: #day-12---christmas-tree-farm
+[cal]: #calendar
 
 [d01-puzzle]: https://adventofcode.com/2025/day/1
 [d02-puzzle]: https://adventofcode.com/2025/day/2
