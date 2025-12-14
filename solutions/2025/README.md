@@ -593,7 +593,7 @@ for m in open(...).read().splitlines():
 
 ### Part 10.1
 
-First they ask us to figure out the minimum amount of buttons you need to press to get the correct set of indicator lights
+First they ask us to figure out the minimum amount of **buttons** you need to press to get the correct set of indicator **lights**
 on for each machine. It is important to note here that pressing a button twice is useless, as it just undoes itself and
 therefore cannot lead to the minimum. This makes the problem much simpler as we can just loop over a known group of 
 possible combinations. Furthermore, we can simulate the press of a button by taking the difference of two sets:
@@ -616,8 +616,95 @@ Note that I used the built-in [`itertools`][iter-info] package of python to cons
 
 ### Part 10.2
 
-```python
+Now we are asked to figure out the minimum amount of **buttons** you need to press to get the correct **joltage** levels 
+for each machine. This also means that pressing a button twice is actually possible now, significantly increasing the 
+complexity of this problem. 
 
+My initial thought was, we need to interpret this as a [system of linear equations][sle-info] and solve that. For instance, 
+given the following example machine **manual**:
+
+```python
+"[.##.] (3) (1,3) (2) (2,3) (0,2) (0,1) {3,5,4,7}"
+```
+
+We can write this as a system of equations, convert it to an [augmented matrix][aug-info] and finally reduce it to 
+its [Row Echelon Form (REF)][REF-info]:
+
+
+$$
+\begin{aligned}
+b_4 + b_5 &= 3 \\
+b_1 + b_5 &= 5 \\
+b_2 + b_3 + b_4 &= 4 \\
+b_0 + b_1 + b_3 &= 7
+\end{aligned}
+\quad \Longrightarrow \quad
+\left[
+\begin{array}{cccccc|c}
+0 & 0 & 0 & 1 & 1 & 0 & 3 \\
+0 & 1 & 0 & 0 & 1 & 0 & 5 \\
+0 & 0 & 1 & 1 & 0 & 0 & 4 \\
+1 & 1 & 0 & 1 & 0 & 0 & 7
+\end{array}
+\right]
+\quad \Longrightarrow \quad
+\left[
+\begin{array}{cccccc|c}
+1 & 0 & 0 & 0 & -1 & 0 & 2 \\
+0 & 1 & 0 & 0 & 1 & 0 & 5 \\
+0 & 0 & 1 & 0 & -1 & 0 & 1 \\
+0 & 0 & 0 & 1 & 1 & 0 & 3
+\end{array}
+\right]
+$$
+
+```python
+total = 0
+for buttons, joltages in zip(manual[1], manual[2]):
+    # Create Augmented Matrix:
+    n = len(joltages)
+    A, b = [[int(i in btn) for btn in buttons] for i in range(n)], list(joltages)
+    # Solve ILP:
+    total += sum(solve(A,b))
+```
+Paragraph about `solve(A,b)`.
+
+Paragraph about second approach (mention post).
+
+```python
+def get_combos(buttons: list[list[int]]) -> dict[tuple[int], int]:
+    J, B, size = len(buttons[0]), len(buttons), {}
+    for b in range(B + 1):
+        for combo in itertools.combinations(buttons, b):
+            action = (0,) * J if b == 0 else tuple(sum(c) for c in zip(*combo))
+            size[action] = min(size.get(action, INF), b)
+    return size
+```
+
+```python
+def min_presses(buttons: [list[list[int]]], joltages: list[int]) -> int:
+    combos = list(get_combos(buttons).items())
+
+    @cache
+    def solve(goal: tuple[int]) -> int:
+        if not any(goal):
+            return 0
+        else:
+            best = INF
+            for combo, presses in combos:
+                if all(c <= g and ((c ^ g) & 1) == 0 for c, g in zip(combo, goal)):
+                    nxt = tuple((g - c) // 2 for c, g in zip(combo, goal))
+                    best = min(best, presses + 2 * solve(nxt)) 
+            return best
+
+    return solve(tuple(joltages))
+```
+
+```python
+total = 0
+for (buttons, joltages) in zip(manual[1], manual[2]):
+    btns = [[1 if i in btn else 0 for i in range(len(joltages))] for btn in buttons]
+    total += min_presses(btns, joltages)
 ```
 
 Day 11 - Reactor
@@ -706,5 +793,8 @@ We did, however, had to add `out` to the `devices` object for this to work.
 [poly-info]: https://en.wikipedia.org/wiki/Polygon
 [PIP-info]: https://en.wikipedia.org/wiki/Point_in_polygon#Ray_casting_algorithm
 [DFS-info]: https://en.wikipedia.org/wiki/Depth-first_search
+[sle-info]: https://en.wikipedia.org/wiki/System_of_linear_equations
+[aug-info]: https://en.wikipedia.org/wiki/Augmented_matrix
+[REF-info]: https://en.wikipedia.org/wiki/Row_echelon_form
 
 [pod-info]: https://en.wikipedia.org/wiki/Cephalopod

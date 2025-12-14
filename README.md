@@ -21,8 +21,7 @@ programming language you like. People use them as interview prep, company traini
 university coursework, practice problems, a speed contents, or to challenge each other.
 Each year it starts on the 1st of December, releasing a new puzzle every day divided in
 two parts (the second part is only unlocked after solving the first one). It is created by
-[Eric Wastl][aoc-eric] and it is free, but if you want to support its creator, you can donate to him
-here [here][aoc-support].
+[Eric Wastl][aoc-eric] and it is free, but if you want to support its creator, you can donate to him [here][aoc-support].
 
 ---
 📋 Personal Rules
