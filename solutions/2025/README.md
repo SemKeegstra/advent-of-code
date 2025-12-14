@@ -620,17 +620,15 @@ Now we are asked to figure out the minimum amount of **buttons** you need to pre
 for each machine. This also means that pressing a button twice is actually possible now, significantly increasing the 
 complexity of this problem. 
 
-My initial thought was, we can solve this as a [system of linear equations][sle-info]. For example, given one of the
-example **manuals**:
+My initial thought was, there are too many patterns to brute force this problem, we should instead solve it as a 
+[system of linear equations][sle-info]. For instance, given one of the example **manuals**:
 
-```python
+```text
 "[.##.] (3) (1,3) (2) (2,3) (0,2) (0,1) {3,5,4,7}"
 ```
 
 We can rewrite the buttons and joltages as a linear system, then convert it to an [augmented matrix][aug-info] and 
-finally reduce it to its [Row Echelon Form (REF)][REF-info] which should be solvable and have a minimum 
-[Integer Linear Programming (ILP)][ILP-info] solution:
-
+finally reduce it to its [Row Echelon Form (REF)][REF-info] which should be solvable:
 $$
 \begin{aligned}
 b_4 + b_5 &= 3 \\
@@ -658,6 +656,8 @@ b_0 + b_1 + b_3 &= 7
 \right]
 $$
 
+So my main loop looked like this:
+
 ```python
 total = 0
 for buttons, joltages in zip(manual[1], manual[2]):
@@ -667,23 +667,49 @@ for buttons, joltages in zip(manual[1], manual[2]):
     # Solve ILP:
     total += sum(solve(A,b))
 ```
-Paragraph about `solve(A,b)`.
-
-Paragraph about second approach (mention post).
+However, as is clear from the example, we are not dealing with simple [square matrices][square-info] **AND** we are
+specifically interested in the minimum [integer solution][ILP-info] of the system. This makes writing `solve(A,b)` an 
+enormous hassle. Yes, via external packages like [z3][z3-info] or [PuLP][pulp-info] it is quite easy as your only job is
+formatting the inputs for the solver. Creating a solver yourself on the other hand requires blood, sweat and mostly tears. 
+While I was able to solve the puzzle, I was really not satisfied and also not convinced that this was the *correct* 
+approach to the problem. This is Advent of Code, so solutions tend to be relatively short and fast. You just need to find the trick!
 
 ```python
-def get_combos(buttons: list[list[int]]) -> dict[tuple[int], int]:
-    J, B, size = len(buttons[0]), len(buttons), {}
-    for b in range(B + 1):
-        for combo in itertools.combinations(buttons, b):
-            action = (0,) * J if b == 0 else tuple(sum(c) for c in zip(*combo))
-            size[action] = min(size.get(action, INF), b)
-    return size
+total = 0
+for (buttons, joltages) in zip(manual[1], manual[2]):
+    total += min_presses(buttons, joltages)
 ```
 
+Unfortunately, I did not figure out the trick... but this [guy][trick-d10p2-info] did! After only reading the **TLDR**
+I went back to the drawing board. We do not need to check all unique combinations, because for each machine we know one
+thing for sure: it should contain a *press-once* **combination** of buttons that has the same even-odd pattern as the 
+required joltage levels (unsolvable otherwise). So we should just start by only checking those combinations, for each
+subtract the result from our joltage level **goal** and then repeat recursively.
+
+To begin we need to format our input differently. For each machine we are only interested in the **effect** that button
+combos have on the joltage levels and the minimum amount of presses (called **size** below) to achieve this effect:
+
 ```python
-def min_presses(buttons: [list[list[int]]], joltages: list[int]) -> int:
-    combos = list(get_combos(buttons).items())
+def get_combos(buttons: list[tuple[int]], n_lvls: int) -> dict[tuple[int], int]:
+    # Initialize:
+    btns = [[1 if i in btn else 0 for i in range(n_lvls)] for btn in buttons]
+    # Combine:
+    J, B, size = len(btns[0]), len(btns), {}
+    for b in range(B + 1):
+        for combo in itertools.combinations(btns, b):
+            effect = (0,) * n_lvls if b == 0 else tuple(sum(c) for c in zip(*combo))
+            size[effect] = min(size.get(effect, INF), b)
+    return size
+```
+After subtracting a *press-once* combination, we check the following for each new joltage level goal:
+1. Are all levels zero? Then we are finished since we have found a successful pattern.
+2. Is there a negative level? Terminate unsuccessfully (e.g. large number) because this pattern overshoots the initial goal.
+
+Otherwise, we just continue and search for the next viable set of combinations that match parity with our new goal:
+
+```python
+def min_presses(buttons: [list[list[int]]], joltages: list[int], INF: int = 10**6) -> int:
+    combos = list(get_combos(buttons, len(joltages)).items())
 
     @cache
     def solve(goal: tuple[int]) -> int:
@@ -691,21 +717,19 @@ def min_presses(buttons: [list[list[int]]], joltages: list[int]) -> int:
             return 0
         else:
             best = INF
-            for combo, presses in combos:
+            for combo, size in combos:
                 if all(c <= g and ((c ^ g) & 1) == 0 for c, g in zip(combo, goal)):
                     nxt = tuple((g - c) // 2 for c, g in zip(combo, goal))
-                    best = min(best, presses + 2 * solve(nxt)) 
+                    best = min(best, size + 2 * solve(nxt)) 
             return best
 
     return solve(tuple(joltages))
 ```
 
-```python
-total = 0
-for (buttons, joltages) in zip(manual[1], manual[2]):
-    btns = [[1 if i in btn else 0 for i in range(len(joltages))] for btn in buttons]
-    total += min_presses(btns, joltages)
-```
+Note that the parity check ensures that after subtracting a valid combination, the remaining joltage levels are even in
+every coordinate. This means that all remaining button presses must occur in pairs. We can therefore divide the remaining
+goal by two and solve the same problem recursively on this smaller instance. Conceptually, each recursive call corresponds 
+to fixing one binary **bit** of the joltage levels. This is why the total number of presses is given by:`size + 2 · solve(next goal)`.
 
 Day 11 - Reactor
 ----------------
@@ -783,7 +807,8 @@ We did, however, had to add `out` to the `devices` object for this to work.
 [re-info]: https://docs.python.org/3/library/re.html
 [iter-info]: https://docs.python.org/3/library/itertools.html
 [cache-info]: https://docs.python.org/3/library/functools.html
-
+[z3-info]: https://ericpony.github.io/z3py-tutorial/guide-examples.htm
+[pulp-info]: https://coin-or.github.io/pulp/
 
 [greedy-info]: https://en.wikipedia.org/wiki/Greedy_algorithm
 [backtrack-info]: https://en.wikipedia.org/wiki/Backtracking
@@ -797,5 +822,8 @@ We did, however, had to add `out` to the `devices` object for this to work.
 [aug-info]: https://en.wikipedia.org/wiki/Augmented_matrix
 [REF-info]: https://en.wikipedia.org/wiki/Row_echelon_form
 [ILP-info]: https://en.wikipedia.org/wiki/Integer_programming
+[square-info]: https://en.wikipedia.org/wiki/Square_matrix
+
+[trick-d10p2-info]: https://old.reddit.com/r/adventofcode/comments/1pk87hl/2025_day_10_part_2_bifurcate_your_way_to_victory/
 
 [pod-info]: https://en.wikipedia.org/wiki/Cephalopod
