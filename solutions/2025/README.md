@@ -26,7 +26,7 @@ Table of Contents
 - [Day 10 - Factory][d10]
 - [Day 11 - Reactor][d11]
 - [Day 12 - Christmas Tree Farm][d12]
-- [Calendar][cal]
+- [Finished Calendar][cal]
 
 Highlights
 ----------
@@ -36,7 +36,16 @@ of some of the more interesting ideas I ended up implementing this year (e.g. sp
 things I (re)discovered along the way, and writing them down here helps capture what made this year's puzzles especially
 fun and sometimes even enlightening:
 
-- ...
+- **String Periodicity** ([D2-P2][d2p2]):
+  - Identifying repeating patterns via the idea that a string `s` is periodic **iff** `s` is a substring of `(s + s)[1:-1]`.
+- **Backtracking** ([D7-P2][d7p2]):
+  - Traversing a [DAG][dag-info] using a [backtracking algorithm][backtrack-info] with built-in [memoization][memo-info].
+- **Rectangle in Polygon** ([D9-P2][d9p2]):
+  - Realization: not a [PIP][PIP-info]! Check if edges of polygon pass through rectangle instead.
+- **Parity & Bifurcation** ([D10-P2][d10p2]):
+  - Recognized that any integer combination includes a parity-matching 0/1 subset (with even remainder).
+- **Depth-First Search** ([D11-P1][d11p1]):
+  - Very short [DFS][DFS-info] algorithm via [caching][cache-info] that could solve both parts.
 
 Day 1 - Secret Entrance
 -----------------------
@@ -148,9 +157,9 @@ for ID in ids:
             total += n
 ```
 
-If a string `s` consists of a pattern `p` repeated `k` times (with `k>=2`), then `s = P + ... + p`. If we then
-concatenate `s` with itself we get: `s + s = p + ... + p + p + ... + p`. If `s` has a repeating pattern, we
-should be able to shift our view of `s + s` by one character and still have the pattern realign itself at some point before 
+If a string $s$ consists of a pattern $p$ repeated $k$ times (with $k>=2$), then $s = p + ... + p$. If we then
+concatenate $s$ with itself we get: $s + s = p + ... + p + p + ... + p$. If $s$ has a repeating pattern, we
+should be able to shift our view of $s + s$ by one character and still have the pattern realign itself at some point before 
 we reach the middle of the concatenated string. This means we do not actually need an additional loop at all, we just need
 to concatenate the ID string and look within!
 
@@ -554,7 +563,7 @@ With that out of the way, let us now define how we check if the area of a rectan
 Note that we should **NOT** consider this as a [point-in-polygon (PIP)][PIP-info] problem as the rectangles in question
 are very large, hence ray tracing algorithms are off the table. Instead the geometric idea is that if a polygon passes 
 through the interior of the rectangle, then part of the rectangle is outside, even if the center is inside. So we should
-actually check if none of the edges are inside the polygon:
+actually check if none of the polygon edges are inside the rectangle:
 
 ```python
 def area_in_poly(p1: tuple[int, int], p2: tuple[int, int]) -> bool:
@@ -811,8 +820,8 @@ for grid, presents in trees:
 After taking a closer look at the puzzle input, I realized that these grids are more simplistic than the example. In 
 fact, the grids in which presents cannot be placed naively due to lack of space also cannot fit presents any other way...
 
-Calendar
---------
+Finished Calendar
+-----------------
 [Back to top][top]
 
 <p align="center"><img src="../../_static/gifs/AOC_2025.gif" alt="Advent of Code 2025 calendar"></p>
@@ -834,7 +843,13 @@ Calendar
 [d10]: #day-10---factory
 [d11]: #day-11---reactor
 [d12]: #day-12---christmas-tree-farm
-[cal]: #calendar
+[cal]: #finished-calendar
+
+[d2p2]: #part-22
+[d7p2]: #part-72
+[d9p2]: #part-92
+[d10p2]: #part-102
+[d11p1]: #part-111
 
 [d01-puzzle]: https://adventofcode.com/2025/day/1
 [d02-puzzle]: https://adventofcode.com/2025/day/2
