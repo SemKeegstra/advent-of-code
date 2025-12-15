@@ -25,6 +25,8 @@ Table of Contents
 - [Day 9 - Movie Theater][d09]
 - [Day 10 - Factory][d10]
 - [Day 11 - Reactor][d11]
+- [Day 12 - Christmas Tree Farm][d12]
+- [Calendar][cal]
 
 Highlights
 ----------
@@ -773,6 +775,49 @@ n_paths('svr', 'fft') * n_paths('fft', 'dac') * n_paths('dac', 'out')
 
 We did, however, had to add `out` to the `devices` object for this to work.
 
+Day 12 - Christmas Tree Farm
+----------------------------
+[Puzzle][d12-puzzle] — [Back to top][top]
+
+We are given a summary of the situation on the farm, containing a list of **shapes** representing the various presents
+and information about the grid size & presents under each **tree**:
+
+
+```python
+lines = open(...).read().split('\n\n')
+shapes = {k: e.split() for k, e in (l.split(':') for l in lines[:-1])}
+trees = [(list(map(int, g.split('x'))), list(map(int, s.split()))) for g, s in (l.split(':') for l in lines[-1].splitlines())]
+```
+
+### Part 12.1
+
+The goal is to figure out for how many trees the listed presents actually fit inside the grid, so a [bin packing problem][pack-info].
+The tricky thing is that the shapes can be rotated and I got stuck trying to account for this in my algorithm. 
+
+However, during debugging I was curious how much extra space grids needed to naively place all presents side by side. After a 
+simple check via a **multiplier**, I realized I was able to use this to locate the *difficult* areas of the example. So
+I thought, why not give the puzzle input a try. To my surprise it actually works:
+
+```python
+multiplier, total = 1.1, 0
+for grid, presents in trees:
+    grid_size = grid[0] * grid[1]
+    if grid_size * multiplier < sum(presents) * (3*3):
+        continue
+    else:
+        total += 1
+```
+
+After taking a closer look at the puzzle input, I realized that these grids are more simplistic than the example. In 
+fact, the grids in which presents cannot be placed naively due to lack of space also cannot fit presents any other way...
+
+Calendar
+--------
+[Back to top][top]
+
+<p align="center"><img src="../../_static/gifs/AOC_2025.gif" alt="Advent of Code 2025 calendar"></p>
+
+
 [aoc-2025]: https://adventofcode.com/2025
 
 [top]: #advent-of-code-2025-solutions
@@ -788,6 +833,8 @@ We did, however, had to add `out` to the `devices` object for this to work.
 [d09]: #day-9---movie-theater
 [d10]: #day-10---factory
 [d11]: #day-11---reactor
+[d12]: #day-12---christmas-tree-farm
+[cal]: #calendar
 
 [d01-puzzle]: https://adventofcode.com/2025/day/1
 [d02-puzzle]: https://adventofcode.com/2025/day/2
@@ -800,6 +847,7 @@ We did, however, had to add `out` to the `devices` object for this to work.
 [d09-puzzle]: https://adventofcode.com/2025/day/9
 [d10-puzzle]: https://adventofcode.com/2025/day/10
 [d11-puzzle]: https://adventofcode.com/2025/day/11
+[d12-puzzle]: https://adventofcode.com/2025/day/12
 
 [mod-info]: https://en.wikipedia.org/wiki/Modulo
 [max-info]: https://docs.python.org/3/library/functions.html#max
@@ -824,6 +872,7 @@ We did, however, had to add `out` to the `devices` object for this to work.
 [REF-info]: https://en.wikipedia.org/wiki/Row_echelon_form
 [ILP-info]: https://en.wikipedia.org/wiki/Integer_programming
 [square-info]: https://en.wikipedia.org/wiki/Square_matrix
+[pack-info]: https://en.wikipedia.org/wiki/Packing_problems
 
 [trick-d10p2-info]: https://old.reddit.com/r/adventofcode/comments/1pk87hl/2025_day_10_part_2_bifurcate_your_way_to_victory/
 
