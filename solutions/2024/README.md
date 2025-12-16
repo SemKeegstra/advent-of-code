@@ -136,7 +136,8 @@ for do in memory.split("do()"):
 ```
 
 However, after a quick search, it would have also been possible to use regex to find the enabled blocks:
-`r"(?s)(?:^|do\(\))(.*?)(?=don't\(\)|$)"`.
+
+`r"(?s)(?:^|do\(\))(.*?)(?=don't\(\)|$)"`
 
 [aoc-2024]: https://adventofcode.com/2024
 [top]: #advent-of-code-2024-solutions
