@@ -41,6 +41,7 @@ To keep the challenge authentic and enjoyable, I follow a few personal rules whi
 📚 Overview
 -----------
 - **AoC 2025**: [solutions][2025-sol]
+- **AoC 2024**: [solutions][2024-sol]
 
 
 
@@ -52,3 +53,4 @@ To keep the challenge authentic and enjoyable, I follow a few personal rules whi
 [aoc-support]: https://adventofcode.com/2019/support
 
 [2025-sol]: solutions/2025/README.md
+[2024-sol]: solutions/2024/README.md
