@@ -29,26 +29,30 @@ Day 1 - Historian Hysteria
 --------------------------
 [Puzzle][d01-puzzle] — [Back to top][top]
 
-...
+We are given a document that contains two lists of **location IDs** side by side:
 
 ```python
-
+ids = [ID.split("   ") for ID in open(...).read().splitlines()]
 ```
 
 ### Part 1.1
 
-...
+For part one, the question is basically the answer itself as we are asked to pair up the IDs in ascending order and
+calculate the distance between each pair:
 
 ```python
-
+L, R = map(sorted, zip(*((int(l), int(r)) for l, r in ids)))
+total = sum(abs(l - r) for l, r in zip(L, R))
 ```
 
 ### Part 1.2
 
-...
+Now we need to calculate a total **similarity score** by multiplying each number in the left list by the number of
+occurrences it has in the right list:
 
 ```python
-
+L, R = zip(*((int(l), int(r)) for l, r in ids))
+score = sum(n * R.count(n) for n in L)
 ```
 
 
