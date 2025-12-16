@@ -14,6 +14,7 @@ Table of Contents
 
 - [Highlights][hig]
 - [Day 1 - Hystorian Hysteria][d01]
+- [Day 2 - Red-Nosed Reports][d02]
 
 Highlights
 ----------
@@ -32,6 +33,7 @@ Day 1 - Historian Hysteria
 We are given a document that contains two lists of **location IDs** side by side:
 
 ```python
+# Input:
 ids = [ID.split("   ") for ID in open(...).read().splitlines()]
 ```
 
@@ -55,11 +57,54 @@ L, R = zip(*((int(l), int(r)) for l, r in ids))
 score = sum(n * R.count(n) for n in L)
 ```
 
+Day 2 - Red-Nosed Reports
+-------------------------
+[Puzzle][d02-puzzle] — [Back to top][top]
+
+We are given many **reports**, each containing a list of safety **levels**:
+
+```python
+# Input:
+reports = [[int(lvl) for lvl in line.split()] for line in open(...).read().splitlines()]
+```
+
+### Part 1.1
+
+First we need to evaluate how many reports are safe based on the provided rules. So we simply loop over each
+individual report `r`, check if consecutive levels are not too far apart and if not check is the list is either 
+ascending or descending:
+
+```python
+total = 0
+for r in reports:
+    if not all(1<=abs(a-b)<=3 for a,b in zip(r, r[1:])):
+        continue
+    elif all(a > b for a,b in zip(r, r[1:])) or all(a < b for a,b in zip(r, r[1:])):
+        total += 1
+```
+
+### Part 1.2
+
+Now unsafe reports are allowed if removing a single level creates a report that adheres to the rules. This means our code 
+can stay almost exactly the same, we just need an additional loop such that we can evaluate all sub-report combinations `c`:
+
+```python
+total = 0
+for r in reports:
+    for c in (r[:i] + r[i+1:] for i in range(len(r))):
+        if not all(1<=abs(a-b)<=3 for a,b in zip(c, c[1:])):
+            continue
+        elif all(a > b for a,b in zip(c, c[1:])) or all(a < b for a,b in zip(c, c[1:])):
+            total += 1
+            break
+```
 
 [aoc-2024]: https://adventofcode.com/2024
 [top]: #advent-of-code-2024-solutions
 [hig]: #highlights
 [d01]: #day-1---historian-hysteria
+[d02]: #day-2---red-nosed-reports
+
 
 [d01-puzzle]: https://adventofcode.com/2024/day/1
 [d02-puzzle]: https://adventofcode.com/2024/day/2
