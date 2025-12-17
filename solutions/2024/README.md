@@ -16,6 +16,7 @@ Table of Contents
 - [Day 1 - Hystorian Hysteria][d01]
 - [Day 2 - Red-Nosed Reports][d02]
 - [Day 3 - Mull It Over][d03]
+- [Day 4 - Ceres Search][d04]
 
 Highlights
 ----------
@@ -139,12 +140,62 @@ However, after a quick search, it would have also been possible to use regex to 
 
 `r"(?s)(?:^|do\(\))(.*?)(?=don't\(\)|$)"`
 
+Day 4 - Ceres Search
+--------------------
+[Puzzle][d04-puzzle] — [Back to top][top]
+
+We are given the **grid** of the small elf's word search puzzle:
+
+```python
+# Input:
+grid = open(...).read().splitlines()
+```
+
+### Part 4.1
+
+Since the input is actually not that big, we can simply do a [brute-force][brute-info] approach to find all occurrences
+of `"XMAS"` inside the puzzle. Just loop over the grid and at each position check all 4 important directions
+(horizontal, vertical & two diagonals):
+
+```python
+total = 0
+for r in range(R:=len(grid)):
+    for c in range(C:=len(grid[0])):
+        lines = [] 
+        lines.append(c < C-3 and ''.join(grid[r][c+i] for i in range(4)))
+        lines.append(r < R-3 and ''.join(grid[r+i][c] for i in range(4)))
+        lines.append(c < C-3 and r < R-3 and ''.join(grid[r+i][c+i] for i in range(4)))
+        lines.append(c > 2 and r < R-3 and ''.join(grid[r+i][c-i] for i in range(4)))
+        total += sum(line in {"XMAS", "SAMX"} for line in lines)
+```
+Note that I also check for `"SAMX"` such that I do not have to evaluate 8 directions.
+
+### Part 4.2
+
+Apparently we are not accustomed to elfish puzzle logic, because we should have actually counted the number of times 
+the word `"MAS"` creates a 3 by 3 cross inside the puzzle. We can use the same logic as before, but now at each position
+we check the diagonals (`d1` & `d2`) of a 3x3 grid where our current position is the top left corner:
+
+```python
+total = 0
+for r in range(R:=len(grid)):
+    for c in range(C:=len(grid[0])):
+        if (c < C - 2) and (r < R - 2):
+            d1 = ''.join(grid[r+i][c+i] for i in range(3))
+            d2 = ''.join(grid[r+i][c+2-i] for i in range(3))
+            if d1 in {"MAS", "SAM"} and d2 in {"MAS", "SAM"}:
+                total += 1
+```
+
+
+
 [aoc-2024]: https://adventofcode.com/2024
 [top]: #advent-of-code-2024-solutions
 [hig]: #highlights
 [d01]: #day-1---historian-hysteria
 [d02]: #day-2---red-nosed-reports
 [d03]: #day-3---mull-it-over
+[d04]: #day-4---ceres-search
 
 
 [d01-puzzle]: https://adventofcode.com/2024/day/1
@@ -174,5 +225,6 @@ However, after a quick search, it would have also been possible to use regex to 
 [d25-puzzle]: https://adventofcode.com/2024/day/25
 
 [regex-info]: https://en.wikipedia.org/wiki/Regular_expression
+[brute-info]: https://en.wikipedia.org/wiki/Brute-force_search
 
 [re-info]: https://docs.python.org/3/library/re.html
