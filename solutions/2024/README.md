@@ -17,6 +17,7 @@ Table of Contents
 - [Day 2 - Red-Nosed Reports][d02]
 - [Day 3 - Mull It Over][d03]
 - [Day 4 - Ceres Search][d04]
+- [Day 5 - Print Queue][d05]
 
 Highlights
 ----------
@@ -187,6 +188,65 @@ for r in range(R:=len(grid)):
                 total += 1
 ```
 
+Day 5 - Print Queue
+-------------------
+[Puzzle][d05-puzzle] — [Back to top][top]
+
+We are given an overview of the changes to be made to the new sleigh launch safety **manual**:
+
+```python
+# Input:
+manual = open(...).read().split("\n\n")
+```
+
+It consists out of two parts, namely: the page ordering **rules** and the **update** specifications:
+
+```python
+rules = defaultdict(set)
+for rule in manual[0].splitlines():
+    first, second = map(int, rule.split('|'))
+    rules[second].add(first)
+```
+```python
+updates = [list(map(int, update.split(','))) for update in manual[1].splitlines()]
+```
+Note that I formatted the rules as a [defaultdict][ddict-info], where each page has a corresponding set of pages that
+are not allowed to occur after the key page.
+
+### Part 5.1
+
+We are asked to evaluate which updates adhere to the given ruleset and count their total sum of middle pages. So we can simply
+loop over the **pages** of each **update** and if we find an invalid sequence just continue to the next:
+```python
+total = 0
+for update in updates:
+    P = len(update)
+    if any(set(update[p+1:]) & rules[update[p]] for p in range(P)):
+        continue
+    total += update[P//2]
+```
+
+### Part 5.2
+
+Now we are actually interested in the invalid updates and ordering those correctly. Note that we can just add a `not`
+operator in our previous *if-statement* to focus on invalid rules instead of valid rules! Furthermore, we can use a 
+[queue][deque-info] to iteratively add pages to our revised update if the remaining pages in the queue do not violate
+the rules:
+
+```python
+total = 0
+for update in updates:
+    P, new_update, queue = len(update), [], deque(update)
+    if not any(set(update[p+1:]) & rules[update[p]] for p in range(P)):
+       continue
+    while queue:
+        page = queue.popleft()
+        if set(queue) & rules[page]:
+            queue.append(page)
+        else:
+            new_update.append(page)
+    total += new_update[P//2]
+```
 
 
 [aoc-2024]: https://adventofcode.com/2024
@@ -196,6 +256,7 @@ for r in range(R:=len(grid)):
 [d02]: #day-2---red-nosed-reports
 [d03]: #day-3---mull-it-over
 [d04]: #day-4---ceres-search
+[d05]: #day-5---print-queue
 
 
 [d01-puzzle]: https://adventofcode.com/2024/day/1
@@ -228,3 +289,5 @@ for r in range(R:=len(grid)):
 [brute-info]: https://en.wikipedia.org/wiki/Brute-force_search
 
 [re-info]: https://docs.python.org/3/library/re.html
+[ddict-info]: https://docs.python.org/3/library/collections.html#collections.defaultdict
+[deque-info]: https://docs.python.org/3/library/collections.html#collections.deque
