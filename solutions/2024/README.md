@@ -18,6 +18,7 @@ Table of Contents
 - [Day 3 - Mull It Over][d03]
 - [Day 4 - Ceres Search][d04]
 - [Day 5 - Print Queue][d05]
+- [Day 6 - Guard Gallivant][d06]
 
 Highlights
 ----------
@@ -248,6 +249,45 @@ for update in updates:
     total += new_update[P//2]
 ```
 
+Day 6 - Guard Gallivant
+-----------------------
+[Puzzle][d06-puzzle] — [Back to top][top]
+
+In order to prevent any time paradoxes, we are given a map of the **grid** that the guard is patrolling:
+
+```python
+# Input:
+grid = open(path).read().splitlines()
+```
+
+### Part 6.1
+
+We are asked to find the number of distinct positions that the guard visits before leaving the grid. To do this we first
+need to find the current position of the guard:
+
+```python
+pos = next((r, grid[r].index('^')) for r in range(len(grid)) if '^' in grid[r])
+```
+Next, we define a function that simulates the guard taking a step given her current `position` and `direction`:
+```python
+directions = cycle([(-1,0), (0,1), (1,0), (0,-1)])
+def step(position: tuple, direction: tuple) -> tuple[tuple, tuple]:
+    nxt = tuple(map(sum, zip(position, direction)))
+    if grid[nxt[0]][nxt[1]] == '#':
+        direction = next(directions)
+        return step(position, direction)
+    else:
+        return (nxt, direction)
+```
+Note that I formatted the possible **directions** that the guard can take as a clockwise [cycle][cycle-info]. To acquire
+all the distinct positions, we simply keep adding the **seen** positions to a set until we move outside the grid:
+
+```python
+seen, d = set({pos}), next(directions)
+while pos[0] < len(grid) - 1 and pos[1] < len(grid[0]) - 1:
+    pos, d = step(pos, d)
+    seen.add(pos)
+```
 
 [aoc-2024]: https://adventofcode.com/2024
 [top]: #advent-of-code-2024-solutions
@@ -257,6 +297,7 @@ for update in updates:
 [d03]: #day-3---mull-it-over
 [d04]: #day-4---ceres-search
 [d05]: #day-5---print-queue
+[d06]: #day-6---guard-gallivant
 
 
 [d01-puzzle]: https://adventofcode.com/2024/day/1
@@ -291,3 +332,4 @@ for update in updates:
 [re-info]: https://docs.python.org/3/library/re.html
 [ddict-info]: https://docs.python.org/3/library/collections.html#collections.defaultdict
 [deque-info]: https://docs.python.org/3/library/collections.html#collections.deque
+[cycle-info]: https://docs.python.org/3/library/itertools.html#itertools.cycle
