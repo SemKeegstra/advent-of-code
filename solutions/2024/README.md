@@ -263,10 +263,10 @@ grid = open(path).read().splitlines()
 ### Part 6.1
 
 We are asked to find the number of distinct positions that the guard visits before leaving the grid. To do this we first
-need to find the current position of the guard:
+need to find the **starting position** of the guard:
 
 ```python
-pos = next((r, grid[r].index('^')) for r in range(len(grid)) if '^' in grid[r])
+start_pos = next((r, grid[r].index('^')) for r in range(len(grid)) if '^' in grid[r])
 ```
 Next, we define a function that simulates the guard taking a step given her current `position` and `direction`:
 ```python
@@ -283,10 +283,54 @@ Note that I formatted the possible **directions** that the guard can take as a c
 all the distinct positions, we simply keep adding the **seen** positions to a set until we move outside the grid:
 
 ```python
-seen, d = set({pos}), next(directions)
-while pos[0] < len(grid) - 1 and pos[1] < len(grid[0]) - 1:
+pos, seen, d = start_pos, set({pos}), next(directions)
+while (0 <= pos[0] < len(grid) - 1) and (0 <= pos[1] < len(grid[0]) - 1):
     pos, d = step(pos, d)
     seen.add(pos)
+```
+
+### Part 6.2
+
+For the second part we are asked to find the number of unique loops we can create by adding one additional obstruction.
+Unfortunately, I was not able to find a mathematical trick to identify the loops quickly. So I just used [brute-force][brute-info]
+and looped over each position in the grid.
+
+Since we are now running the simulation again for each new **obstruction**, I had to change the `step()` function slightly.
+Besides adding the obstruction itself, I also started checking the range of the grid here and I realized that a cycle object
+is actually not ideal (so I opted for a list `DIRS` instead):
+
+```python
+def step(position: tuple, direction: int, obstruction: tuple):
+    nxt = tuple(map(sum, zip(position, DIRS[direction])))
+    if not (0 <= nxt[0] < R and 0 <= nxt[1] < C):
+        return None
+    if (grid[nxt[0]][nxt[1]] == '#') or (nxt == obstruction):
+        return (position, (direction + 1) % 4)
+    return (nxt, direction)
+```
+Next, for each possible new obstruction (`obs`), we basically run exactly what we did in part one. However, now we also
+store the corresponding direction of the seen positions. Because if we hit a (position, direction) combo that we already
+encountered before, we know that we have found a loop:
+
+```python
+total = 0
+for r in range(R:=len(grid)):
+    for c in range(C:=len(grid[0])):
+        if grid[r][c] != '.':
+            continue
+        else:
+            pos, obs = start_pos, (r,c)
+            d, seen = 0, set()
+            while True:
+                if (pos, d) in seen:
+                    total += 1
+                    break
+                seen.add((pos, d))
+    
+                out = step(pos, d, obs)
+                if out is None:
+                    break
+                pos, d = out
 ```
 
 [aoc-2024]: https://adventofcode.com/2024
