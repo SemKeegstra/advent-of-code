@@ -19,6 +19,7 @@ Table of Contents
 - [Day 4 - Ceres Search][d04]
 - [Day 5 - Print Queue][d05]
 - [Day 6 - Guard Gallivant][d06]
+- [Day 7 - Bridge Repair][d07]
 
 Highlights
 ----------
@@ -333,6 +334,48 @@ for r in range(R:=len(grid)):
                 pos, d = out
 ```
 
+Day 7 - Bridge Repair
+---------------------
+[Puzzle][d07-puzzle] — [Back to top][top]
+
+We are given the calibration **equations** of the defected bridge:
+
+```python
+# Input:
+equations = [eq.split(": ") for eq in open(...).read().splitlines()]
+```
+
+### Part 7.1
+
+First we need to identify which test **values** can be produced by placing any combination of **operators** (`+` or `*`)
+into their corresponding equation. Note that instead of trying all possible combinations for each equation, we can also
+interpret them as [binary trees][BT-info]. Since a binary tree is a [directed acyclic graph (DAG)][DAG-info] we can
+identify **valid** equations via recursion using a [depth-first search (DFS)][DFS-info] algorithm:
+
+```python
+def valid(ans: int, nums: tuple[int], value: int):
+    if len(nums) == 0:
+        return ans == value
+    return valid(ans + nums[0], nums[1:], value) or valid(ans * nums[0], nums[1:], value)
+```
+With that done, we only need to loop over the equations and evaluate if they are valid:
+```python
+total = 0
+for value, numbers in equations:
+    value, numbers = int(value), tuple(map(int, numbers.split()))
+    if valid(numbers[0], numbers[1:], value):
+        total += value
+```
+
+### Part 7.2
+
+Now we are given a third operator (`||`) that literally adds the digits of two numbers together to create a new number.
+It is quite easy to extend our previous code to account for this, as we only need to add the following operation
+to the return statement of our `valid()` function:
+```python
+valid(int(str(ans)+str(nums[0])), nums[1:], value)
+```
+
 [aoc-2024]: https://adventofcode.com/2024
 [top]: #advent-of-code-2024-solutions
 [hig]: #highlights
@@ -342,6 +385,7 @@ for r in range(R:=len(grid)):
 [d04]: #day-4---ceres-search
 [d05]: #day-5---print-queue
 [d06]: #day-6---guard-gallivant
+[d07]: #day-7---bridge-repair
 
 
 [d01-puzzle]: https://adventofcode.com/2024/day/1
@@ -372,6 +416,9 @@ for r in range(R:=len(grid)):
 
 [regex-info]: https://en.wikipedia.org/wiki/Regular_expression
 [brute-info]: https://en.wikipedia.org/wiki/Brute-force_search
+[BT-info]: https://en.wikipedia.org/wiki/Binary_tree
+[DAG-info]: https://en.wikipedia.org/wiki/Directed_acyclic_graph
+[DFS-info]: https://en.wikipedia.org/wiki/Depth-first_search
 
 [re-info]: https://docs.python.org/3/library/re.html
 [ddict-info]: https://docs.python.org/3/library/collections.html#collections.defaultdict
