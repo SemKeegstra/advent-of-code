@@ -20,6 +20,7 @@ Table of Contents
 - [Day 5 - Print Queue][d05]
 - [Day 6 - Guard Gallivant][d06]
 - [Day 7 - Bridge Repair][d07]
+- [Day 8 - Resonant Collinearity][d08]
 
 Highlights
 ----------
@@ -258,7 +259,7 @@ In order to prevent any time paradoxes, we are given a map of the **grid** that 
 
 ```python
 # Input:
-grid = open(path).read().splitlines()
+grid = open(...).read().splitlines()
 ```
 
 ### Part 6.1
@@ -376,6 +377,72 @@ to the return statement of our `valid()` function:
 valid(int(str(ans)+str(nums[0])), nums[1:], value)
 ```
 
+Day 8 - Resonant Collinearity
+-----------------------------
+[Puzzle][d08-puzzle] — [Back to top][top]
+
+We are given a **grid** overview of the antenna locations:
+
+```python
+# Input:
+grid = open(...).read().splitlines()
+```
+
+But we are actually more interested in the various antenna **frequencies** that are on the grid. So let us format our 
+input like a dictionary where each **key** represents a frequency and the **element** is a list of all the corresponding
+antenna locations:
+
+```python
+frequencies = defaultdict(list)
+for r in range(R:=len(grid)):
+    for c in range(C:=len(grid[0])):
+        if (freq:=grid[r][c]) != '.':
+            frequencies[freq].append((r,c))
+```
+Note that I used a [defaultdict][ddict-info] for convenience, as it initializes unseen frequencies with an empty list.
+
+### Part 8.1
+
+First we are asked to identify the number of unique **antinode** locations, where an antinode occurs at any point that
+is perfectly in line with two antennas of the same frequency, but only when one of the antennas is twice as far away.
+
+It took me some time to actually understand what this means (as I misread it multiple times). But mathematically speaking,
+given two antennas of the same frequency, $a_1 = (r_1, c_1)$ and $a_2 = (r_2, c_2)$, we can define antinodes as:
+
+$$
+n_1 = a_2 + d \mbox{  and  } n_2 = a_1 - d \mbox{  with  } d = (r_2 - r_1, c_2 - c_1),
+$$
+
+where $d$ represents the displacement vector from $a_1$ to $a_2$. So for each frequency we should loop over all possible
+antenna [combinations][combo-info], calculate their antinode locations and evaluate if they are inside the grid:
+
+```python
+nodes = set()
+for freq in frequencies:
+    for (r1, c1), (r2, c2) in combinations(frequencies[freq], 2):
+        n1, n2 = (2*r2 - r1, 2*c2 - c1), (2*r1 - r2, 2*c1 - c2)
+        for n in [n1, n2]:
+            if 0 <= n[0] < R and 0 <= n[1] < C:
+                nodes.add(n)
+```
+
+### Part 8.2
+
+Of course, we forgot to take into the effects of *resonant harmonics* into our calculations. Antinodes actually occur at
+any grid position exactly in line with at least two antennas of the same frequency, regardless of how far. So in
+part 1 we solved for a **distance** of $k=1$, but now we just need to solve it for $k=1,...,R$:
+
+```python
+nodes = set()
+for freq in frequencies:
+    for (r1, c1), (r2, c2) in combinations(frequencies[freq], 2):
+        for k in range(R):
+            n1, n2 = (r2 + k*(r2-r1), c2 + k*(c2-c1)) , (r1 - k*(r2-r1), c1 - k*(c2-c1))
+            for n in [n1, n2]:
+                if 0 <= n[0] < R and 0 <= n[1] < C:
+                    nodes.add(n)
+```
+
 [aoc-2024]: https://adventofcode.com/2024
 [top]: #advent-of-code-2024-solutions
 [hig]: #highlights
@@ -386,6 +453,7 @@ valid(int(str(ans)+str(nums[0])), nums[1:], value)
 [d05]: #day-5---print-queue
 [d06]: #day-6---guard-gallivant
 [d07]: #day-7---bridge-repair
+[d08]: #day-8---resonant-collinearity
 
 
 [d01-puzzle]: https://adventofcode.com/2024/day/1
@@ -424,3 +492,4 @@ valid(int(str(ans)+str(nums[0])), nums[1:], value)
 [ddict-info]: https://docs.python.org/3/library/collections.html#collections.defaultdict
 [deque-info]: https://docs.python.org/3/library/collections.html#collections.deque
 [cycle-info]: https://docs.python.org/3/library/itertools.html#itertools.cycle
+[combo-info]: https://docs.python.org/3/library/itertools.html#itertools.combinations
