@@ -21,6 +21,7 @@ Table of Contents
 - [Day 6 - Guard Gallivant][d06]
 - [Day 7 - Bridge Repair][d07]
 - [Day 8 - Resonant Collinearity][d08]
+- [Day 9 - Disk Fragmenter][d09]
 
 Highlights
 ----------
@@ -443,6 +444,57 @@ for freq in frequencies:
                     nodes.add(n)
 ```
 
+Day 9 - Disk Fragmenter
+-----------------------
+[Puzzle][d09-puzzle] — [Back to top][top]
+
+...
+
+```python
+# Input:
+disk = open(...).read()
+```
+
+### Part 9.1
+
+...
+
+```python
+def decompress(disk: str) -> list[list]:
+    system, blocks = [], [disk[i:i+2] for i in range(0, len(disk),2)]
+    for ID, (file, storage) in enumerate(blocks):
+        for f in range(int(file)):
+            system.append([ID])
+        for s in range(int(storage)):
+            system.append(['.'])
+    return system
+```
+
+...
+
+```python
+def clean(system):
+    L, R = 0, len(system) - 1
+    while L < R:
+        if system[L] != ['.']:
+            L += 1
+        if system[R] == ['.']:
+            R -= 1
+        if system[L] == ['.'] and system[R] != ['.']:
+            system[L] = system[R]
+            system[R] = ['.']
+    return system
+```
+
+...
+
+```python
+total = sum(i * b[0] for i, b in enumerate(clean(decompress(disk))) if b != ['.'])
+```
+
+
+
+
 [aoc-2024]: https://adventofcode.com/2024
 [top]: #advent-of-code-2024-solutions
 [hig]: #highlights
@@ -454,7 +506,7 @@ for freq in frequencies:
 [d06]: #day-6---guard-gallivant
 [d07]: #day-7---bridge-repair
 [d08]: #day-8---resonant-collinearity
-
+[d09]: #day-9---disk-fragmenter
 
 [d01-puzzle]: https://adventofcode.com/2024/day/1
 [d02-puzzle]: https://adventofcode.com/2024/day/2
