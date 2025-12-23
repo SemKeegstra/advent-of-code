@@ -448,7 +448,7 @@ Day 9 - Disk Fragmenter
 -----------------------
 [Puzzle][d09-puzzle] — [Back to top][top]
 
-...
+We are given the **disk map** of the amphipod's computer:
 
 ```python
 # Input:
@@ -457,7 +457,8 @@ disk = open(...).read()
 
 ### Part 9.1
 
-...
+Before we can start, we need to be able to **decompress** the **disk**. For each **block** of 2 digits, we append the
+decompressed **file system** with the number of saved **files** and the amount of free **storage**:
 
 ```python
 def decompress(disk: str) -> list[list]:
@@ -470,7 +471,9 @@ def decompress(disk: str) -> list[list]:
     return system
 ```
 
-...
+The goal of this problem is to **clean up** the storage space of the system. Be aware that this is not a sorting problem,
+but a [two-pointer pattern][two-pointer-info]. By means of inward traversal we can start from both sides of the system
+simultaneously (`L` & `R`) and move a file from **right** to **left** if possible:
 
 ```python
 def clean(system):
@@ -486,11 +489,14 @@ def clean(system):
     return system
 ```
 
-...
+Given that we now can decompress and clean a file system, all that is left to do is calculate the total score:
 
 ```python
 total = sum(i * b[0] for i, b in enumerate(clean(decompress(disk))) if b != ['.'])
 ```
+
+Note that I stored each block inside a list instead of keeping it all in a single string. This is because the ID numbers
+in the actual puzzle input go beyond single digit numbers.
 
 
 
@@ -539,6 +545,7 @@ total = sum(i * b[0] for i, b in enumerate(clean(decompress(disk))) if b != ['.'
 [BT-info]: https://en.wikipedia.org/wiki/Binary_tree
 [DAG-info]: https://en.wikipedia.org/wiki/Directed_acyclic_graph
 [DFS-info]: https://en.wikipedia.org/wiki/Depth-first_search
+[two-pointer-info]: https://bytebytego.com/courses/coding-patterns/two-pointers/introduction-to-two-pointers?fpr=javarevisited
 
 [re-info]: https://docs.python.org/3/library/re.html
 [ddict-info]: https://docs.python.org/3/library/collections.html#collections.defaultdict
