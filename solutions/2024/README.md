@@ -21,6 +21,7 @@ Table of Contents
 - [Day 6 - Guard Gallivant][d06]
 - [Day 7 - Bridge Repair][d07]
 - [Day 8 - Resonant Collinearity][d08]
+- [Day 9 - Disk Fragmenter][d09]
 
 Highlights
 ----------
@@ -443,6 +444,63 @@ for freq in frequencies:
                     nodes.add(n)
 ```
 
+Day 9 - Disk Fragmenter
+-----------------------
+[Puzzle][d09-puzzle] — [Back to top][top]
+
+We are given the **disk map** of the amphipod's computer:
+
+```python
+# Input:
+disk = open(...).read()
+```
+
+### Part 9.1
+
+Before we can start, we need to be able to **decompress** the **disk**. For each **block** of 2 digits, we append the
+decompressed **file system** with the number of saved **files** and the amount of free **storage**:
+
+```python
+def decompress(disk: str) -> list[list]:
+    system, blocks = [], [disk[i:i+2] for i in range(0, len(disk),2)]
+    for ID, (file, storage) in enumerate(blocks):
+        for f in range(int(file)):
+            system.append([ID])
+        for s in range(int(storage)):
+            system.append(['.'])
+    return system
+```
+
+The goal of this problem is to **clean up** the storage space of the system. Be aware that this is not a sorting problem,
+but a [two-pointer pattern][two-pointer-info]. By means of inward traversal we can start from both sides of the system
+simultaneously (`L` & `R`) and move a file from **right** to **left** if possible:
+
+```python
+def clean(system):
+    L, R = 0, len(system) - 1
+    while L < R:
+        if system[L] != ['.']:
+            L += 1
+        if system[R] == ['.']:
+            R -= 1
+        if system[L] == ['.'] and system[R] != ['.']:
+            system[L] = system[R]
+            system[R] = ['.']
+    return system
+```
+
+Given that we now can decompress and clean a file system, all that is left to do is calculate the total score:
+
+```python
+total = sum(i * b[0] for i, b in enumerate(clean(decompress(disk))) if b != ['.'])
+```
+
+Note that I stored each block inside a list instead of keeping it all in a single string. This is because the ID numbers
+in the actual puzzle input go beyond single digit numbers.
+
+
+
+
 [aoc-2024]: https://adventofcode.com/2024
 [top]: #advent-of-code-2024-solutions
 [hig]: #highlights
@@ -454,7 +512,7 @@ for freq in frequencies:
 [d06]: #day-6---guard-gallivant
 [d07]: #day-7---bridge-repair
 [d08]: #day-8---resonant-collinearity
-
+[d09]: #day-9---disk-fragmenter
 
 [d01-puzzle]: https://adventofcode.com/2024/day/1
 [d02-puzzle]: https://adventofcode.com/2024/day/2
@@ -487,6 +545,7 @@ for freq in frequencies:
 [BT-info]: https://en.wikipedia.org/wiki/Binary_tree
 [DAG-info]: https://en.wikipedia.org/wiki/Directed_acyclic_graph
 [DFS-info]: https://en.wikipedia.org/wiki/Depth-first_search
+[two-pointer-info]: https://bytebytego.com/courses/coding-patterns/two-pointers/introduction-to-two-pointers?fpr=javarevisited
 
 [re-info]: https://docs.python.org/3/library/re.html
 [ddict-info]: https://docs.python.org/3/library/collections.html#collections.defaultdict
