@@ -467,7 +467,7 @@ def decompress(disk: str) -> list[list]:
         for f in range(int(file)):
             system.append([ID])
         for s in range(int(storage)):
-            system.append(['.'])
+            system.append(None)
     return system
 ```
 
@@ -476,23 +476,23 @@ but a [two-pointer pattern][two-pointer-info]. By means of inward traversal we c
 simultaneously (`L` & `R`) and move a file from **right** to **left** if possible:
 
 ```python
-def clean(system):
-    L, R = 0, len(system) - 1
+def clean(sys):
+    L, R = 0, len(sys) - 1
     while L < R:
-        if system[L] != ['.']:
+        if sys[L]:
             L += 1
-        if system[R] == ['.']:
+        if sys[R] == None:
             R -= 1
-        if system[L] == ['.'] and system[R] != ['.']:
-            system[L] = system[R]
-            system[R] = ['.']
-    return system
+        if sys[L] == None and sys[R]:
+            sys[L] = sys[R]
+            sys[R] = None
+    return sys 
 ```
 
 Given that we now can decompress and clean a file system, all that is left to do is calculate the total score:
 
 ```python
-total = sum(i * b[0] for i, b in enumerate(clean(decompress(disk))) if b != ['.'])
+total = sum(i * b[0] for i, b in enumerate(clean(decompress(disk))) if b)
 ```
 
 Note that I stored each block inside a list instead of keeping it all in a single string. This is because the ID numbers
