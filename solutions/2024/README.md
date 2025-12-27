@@ -22,6 +22,7 @@ Table of Contents
 - [Day 7 - Bridge Repair][d07]
 - [Day 8 - Resonant Collinearity][d08]
 - [Day 9 - Disk Fragmenter][d09]
+- [Day 10 - Hoof It][d10]
 
 Highlights
 ----------
@@ -481,9 +482,9 @@ def clean(sys):
     while L < R:
         if sys[L]:
             L += 1
-        if sys[R] == None:
+        if not sys[R]:
             R -= 1
-        if sys[L] == None and sys[R]:
+        if not sys[L] and sys[R]:
             sys[L] = sys[R]
             sys[R] = None
     return sys 
@@ -498,8 +499,67 @@ total = sum(i * b[0] for i, b in enumerate(clean(decompress(disk))) if b)
 Note that I stored each block inside a list instead of keeping it all in a single string. This is because the ID numbers
 in the actual puzzle input go beyond single digit numbers.
 
+### Part 9.2
 
+```python
 
+```
+
+Day 10 - Hoof It
+----------------
+[Puzzle][d10-puzzle] — [Back to top][top]
+
+...
+
+```python
+# Input:
+grid = [list(map(int, line)) for line in open(...).read().splitlines()]
+R, C = len(grid), len(grid[0])
+```
+
+### Part 10.1
+
+...
+
+```python
+def score(r: int, c: int) -> set[tuple[int, int]]:
+    dirs = set()
+    if (pos := grid[r][c]) == 9:
+        return {(r,c)}
+    else:
+        for rr, cc in ((r, c+1), (r, c-1), (r+1, c), (r-1, c)):
+            if 0 <= rr < R and 0 <= cc < C and grid[rr][cc] == pos + 1:
+                dirs |= score(rr, cc)
+        return dirs
+```
+
+...
+
+```python
+sum(len(score(r,c)) for r in range(len(grid)) for c in range(len(grid[0])) if grid[r][c] == 0)
+```
+
+### Part 10.2
+
+...
+
+```python
+def score(r: int, c: int) -> int:
+    total = 0
+    if (pos := grid[r][c]) == 9:
+        return 1
+    else:
+        for rr, cc in ((r, c+1), (r, c-1), (r+1, c), (r-1, c)):
+            if 0 <= rr < R and 0 <= cc < C and grid[rr][cc] == pos + 1:
+                total += score(rr,cc)
+        return total
+```
+
+...
+
+```python
+sum(score(r,c) for r in range(len(grid)) for c in range(len(grid[0])) if grid[r][c] == 0)
+```
 
 [aoc-2024]: https://adventofcode.com/2024
 [top]: #advent-of-code-2024-solutions
@@ -513,6 +573,7 @@ in the actual puzzle input go beyond single digit numbers.
 [d07]: #day-7---bridge-repair
 [d08]: #day-8---resonant-collinearity
 [d09]: #day-9---disk-fragmenter
+[d10]: #day-10---hoof-it
 
 [d01-puzzle]: https://adventofcode.com/2024/day/1
 [d02-puzzle]: https://adventofcode.com/2024/day/2
