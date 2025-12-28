@@ -22,6 +22,7 @@ Table of Contents
 - [Day 7 - Bridge Repair][d07]
 - [Day 8 - Resonant Collinearity][d08]
 - [Day 9 - Disk Fragmenter][d09]
+- [Day 10 - Hoof It][d10]
 
 Highlights
 ----------
@@ -467,7 +468,7 @@ def decompress(disk: str) -> list[list]:
         for f in range(int(file)):
             system.append([ID])
         for s in range(int(storage)):
-            system.append(['.'])
+            system.append(None)
     return system
 ```
 
@@ -476,30 +477,97 @@ but a [two-pointer pattern][two-pointer-info]. By means of inward traversal we c
 simultaneously (`L` & `R`) and move a file from **right** to **left** if possible:
 
 ```python
-def clean(system):
-    L, R = 0, len(system) - 1
+def clean(sys):
+    L, R = 0, len(sys) - 1
     while L < R:
-        if system[L] != ['.']:
+        if sys[L]:
             L += 1
-        if system[R] == ['.']:
+        if not sys[R]:
             R -= 1
-        if system[L] == ['.'] and system[R] != ['.']:
-            system[L] = system[R]
-            system[R] = ['.']
-    return system
+        if not sys[L] and sys[R]:
+            sys[L] = sys[R]
+            sys[R] = None
+    return sys 
 ```
 
 Given that we now can decompress and clean a file system, all that is left to do is calculate the total score:
 
 ```python
-total = sum(i * b[0] for i, b in enumerate(clean(decompress(disk))) if b != ['.'])
+total = sum(i * b[0] for i, b in enumerate(clean(decompress(disk))) if b)
 ```
 
 Note that I stored each block inside a list instead of keeping it all in a single string. This is because the ID numbers
 in the actual puzzle input go beyond single digit numbers.
 
+### Part 9.2
 
+```python
 
+```
+
+Day 10 - Hoof It
+----------------
+[Puzzle][d10-puzzle] — [Back to top][top]
+
+We are given a topographic **grid** of the area surrounding the lava production facility:
+
+```python
+# Input:
+grid = [list(map(int, line)) for line in open(...).read().splitlines()]
+```
+
+### Part 10.1
+
+The reindeer wants us to identify all *good hiking trails* and calculate their **scores**. A hiking trail is classified
+as a path that starts at `0`, increases by 1 each step and ends at a **trailhead** `9`. The corresponding score is the
+number of unique **heads** that can be reached from a single starting position.
+
+Note that in order to **score** a hiking trail, given a starting point $(r,c)$, we are actually only interested in the
+set of unique trailheads that can be reached from that point. Furthermore, we are dealing with a [DAG][DAG-info] again as 
+one can only move forward within a *good hiking trail*. This allows us to speed things up by using a [recursive][recur-info] 
+algorithm. In particular, another [DFS][DFS-info] approach, where from each position we explore all valid neighbors and
+extend the set of encountered trailheads until we exhaust all possible paths:
+
+```python
+def score(r: int, c: int) -> set[tuple[int, int]]:
+    heads = set()
+    if (pos := grid[r][c]) == 9:
+        return {(r,c)}
+    else:
+        for rr, cc in ((r, c+1), (r, c-1), (r+1, c), (r-1, c)):
+            if 0 <= rr < R and 0 <= cc < C and grid[rr][cc] == pos + 1:
+                heads |= score(rr, cc)
+        return heads
+```
+Given our scoring function, we just have to add up the number of unique reachable trailheads for each starting position `0`:
+
+```python
+sum(len(score(r,c)) for r in range(len(grid)) for c in range(len(grid[0])) if grid[r][c] == 0)
+```
+
+### Part 10.2
+
+This is a first, I accidentally solved part 2 before I solved part 1! We are now interested in the total **rating** of
+a starting point, which is the number of distinct hiking trails. While trying to solve part 1, I initially forgot to 
+track the trailheads that we already encountered. But that actually left me with the number of distinct hiking trails:
+
+```python
+def score(r: int, c: int) -> int:
+    rating = 0
+    if (pos := grid[r][c]) == 9:
+        return 1
+    else:
+        for rr, cc in ((r, c+1), (r, c-1), (r+1, c), (r-1, c)):
+            if 0 <= rr < R and 0 <= cc < C and grid[rr][cc] == pos + 1:
+                rating += score(rr,cc)
+        return rating
+```
+
+So now our scoring function just counts the doubles as well:
+
+```python
+sum(score(r,c) for r in range(len(grid)) for c in range(len(grid[0])) if grid[r][c] == 0)
+```
 
 [aoc-2024]: https://adventofcode.com/2024
 [top]: #advent-of-code-2024-solutions
@@ -513,6 +581,7 @@ in the actual puzzle input go beyond single digit numbers.
 [d07]: #day-7---bridge-repair
 [d08]: #day-8---resonant-collinearity
 [d09]: #day-9---disk-fragmenter
+[d10]: #day-10---hoof-it
 
 [d01-puzzle]: https://adventofcode.com/2024/day/1
 [d02-puzzle]: https://adventofcode.com/2024/day/2
@@ -546,6 +615,7 @@ in the actual puzzle input go beyond single digit numbers.
 [DAG-info]: https://en.wikipedia.org/wiki/Directed_acyclic_graph
 [DFS-info]: https://en.wikipedia.org/wiki/Depth-first_search
 [two-pointer-info]: https://bytebytego.com/courses/coding-patterns/two-pointers/introduction-to-two-pointers?fpr=javarevisited
+[recur-info]: https://en.wikipedia.org/wiki/Recursion_(computer_science)
 
 [re-info]: https://docs.python.org/3/library/re.html
 [ddict-info]: https://docs.python.org/3/library/collections.html#collections.defaultdict
