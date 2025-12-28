@@ -509,31 +509,37 @@ Day 10 - Hoof It
 ----------------
 [Puzzle][d10-puzzle] — [Back to top][top]
 
-...
+We are given a topographic **grid** of the area surrounding the lava production facility:
 
 ```python
 # Input:
 grid = [list(map(int, line)) for line in open(...).read().splitlines()]
-R, C = len(grid), len(grid[0])
 ```
 
 ### Part 10.1
 
-...
+The reindeer wants us to identify all *good hiking trails* and calculate their **scores**. A hiking trail is classified
+as a path that starts at `0`, increases by 1 each step and ends at a **trailhead** `9`. The corresponding score is the
+number of unique **heads** that can be reached from a single starting position.
+
+Note that in order to **score** a hiking trail, given a starting point $(r,c)$, we are actually only interested in the
+set of unique trailheads that can be reached from that point. Furthermore, we are dealing with a [DAG][DAG-info] again as 
+one can only move forward within a *good hiking trail*. This allows us to speed things up by using a [recursive][recur-info] 
+algorithm. In particular, another [DFS][DFS-info] approach, where from each position we explore all valid neighbors and
+extend the set of encountered trailheads until we exhaust all possible paths:
 
 ```python
 def score(r: int, c: int) -> set[tuple[int, int]]:
-    dirs = set()
+    heads = set()
     if (pos := grid[r][c]) == 9:
         return {(r,c)}
     else:
         for rr, cc in ((r, c+1), (r, c-1), (r+1, c), (r-1, c)):
             if 0 <= rr < R and 0 <= cc < C and grid[rr][cc] == pos + 1:
-                dirs |= score(rr, cc)
-        return dirs
+                heads |= score(rr, cc)
+        return heads
 ```
-
-...
+Given our scoring function, we just have to add up the number of unique reachable trailheads for each starting position `0`:
 
 ```python
 sum(len(score(r,c)) for r in range(len(grid)) for c in range(len(grid[0])) if grid[r][c] == 0)
@@ -541,21 +547,23 @@ sum(len(score(r,c)) for r in range(len(grid)) for c in range(len(grid[0])) if gr
 
 ### Part 10.2
 
-...
+This is a first, I accidentally solved part 2 before I solved part 1! We are now interested in the total **rating** of
+a starting point, which is the number of distinct hiking trails. While trying to solve part 1, I initially forgot to 
+track the trailheads that we already encountered. But that actually left me with the number of distinct hiking trails:
 
 ```python
 def score(r: int, c: int) -> int:
-    total = 0
+    rating = 0
     if (pos := grid[r][c]) == 9:
         return 1
     else:
         for rr, cc in ((r, c+1), (r, c-1), (r+1, c), (r-1, c)):
             if 0 <= rr < R and 0 <= cc < C and grid[rr][cc] == pos + 1:
-                total += score(rr,cc)
-        return total
+                rating += score(rr,cc)
+        return rating
 ```
 
-...
+So now our scoring function just counts the doubles as well:
 
 ```python
 sum(score(r,c) for r in range(len(grid)) for c in range(len(grid[0])) if grid[r][c] == 0)
@@ -607,6 +615,7 @@ sum(score(r,c) for r in range(len(grid)) for c in range(len(grid[0])) if grid[r]
 [DAG-info]: https://en.wikipedia.org/wiki/Directed_acyclic_graph
 [DFS-info]: https://en.wikipedia.org/wiki/Depth-first_search
 [two-pointer-info]: https://bytebytego.com/courses/coding-patterns/two-pointers/introduction-to-two-pointers?fpr=javarevisited
+[recur-info]: https://en.wikipedia.org/wiki/Recursion_(computer_science)
 
 [re-info]: https://docs.python.org/3/library/re.html
 [ddict-info]: https://docs.python.org/3/library/collections.html#collections.defaultdict
