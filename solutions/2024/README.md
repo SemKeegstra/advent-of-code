@@ -23,6 +23,7 @@ Table of Contents
 - [Day 8 - Resonant Collinearity][d08]
 - [Day 9 - Disk Fragmenter][d09]
 - [Day 10 - Hoof It][d10]
+- [Day 11 - Plutonian Pebbles][d11]
 
 Highlights
 ----------
@@ -568,6 +569,55 @@ So now our scoring function just counts the doubles as well:
 ```python
 sum(score(r,c) for r in range(len(grid)) for c in range(len(grid[0])) if grid[r][c] == 0)
 ```
+Day 11 - Plutonian Pebbles
+--------------------------
+[Puzzle][d11-puzzle] — [Back to top][top]
+
+We are given an overview of the current row of **stones** that we encountered on pluto:
+
+```python
+# Input:
+stones = open(...).read().split()
+```
+
+### Part 11.1
+
+Based on the rules with which the stones simultaneously change each time we **blink**, we need to simulate their behaviour
+such that we can deduce the number of stones after a certain amount of blinking. Note that while they keep reemphasizing
+that the order of the stones needs to be preserved, it is not important when solving this problem. Why? Because we can
+just simulate what happens to each individual **stone** after $n$ blinks:
+
+```python
+def blink(stone: str, n: int) -> int:
+    if n == 0:
+        return 1
+    elif stone == '0':
+        return blink('1', n - 1)
+    elif (L := len(stone)) % 2 == 0:
+        a, b = str(int(stone[:L//2])), str(int(stone[L//2:]))
+        return blink(a, n - 1) + blink(b, n - 1)
+    else:
+        return blink(str(int(stone) * 2024), n - 1)
+```
+
+This is a classic example of [dynamic programming][dp-info] on a compressed [state space][state-info]. Since they are 
+interested in the amount of stones after 25 blinks, we can simply take the sum over each initial stone:
+
+```python
+sum(blink(stone, 25) for stone in stones)
+```
+
+### Part 11.2
+
+Now they are interested in the amount of stones after 75 blinks, which is more computationally heavy for our function
+from part one. However, due to the first two rules we will encounter a lot of states again. So applying [memoization][memo-info] 
+via the built-in [cache][cache-info] decorator allows us to quickly calculate the answer for 75 blinks as well:
+
+```python
+sum(blink(stone, 75) for stone in stones)
+```
+
+
 
 [aoc-2024]: https://adventofcode.com/2024
 [top]: #advent-of-code-2024-solutions
@@ -582,6 +632,7 @@ sum(score(r,c) for r in range(len(grid)) for c in range(len(grid[0])) if grid[r]
 [d08]: #day-8---resonant-collinearity
 [d09]: #day-9---disk-fragmenter
 [d10]: #day-10---hoof-it
+[d11]: #day-11---plutonian-pebbles
 
 [d01-puzzle]: https://adventofcode.com/2024/day/1
 [d02-puzzle]: https://adventofcode.com/2024/day/2
@@ -616,9 +667,13 @@ sum(score(r,c) for r in range(len(grid)) for c in range(len(grid[0])) if grid[r]
 [DFS-info]: https://en.wikipedia.org/wiki/Depth-first_search
 [two-pointer-info]: https://bytebytego.com/courses/coding-patterns/two-pointers/introduction-to-two-pointers?fpr=javarevisited
 [recur-info]: https://en.wikipedia.org/wiki/Recursion_(computer_science)
+[memo-info]: https://en.wikipedia.org/wiki/Memoization
+[dp-info]: https://en.wikipedia.org/wiki/Dynamic_programming
+[state-info]: https://en.wikipedia.org/wiki/State_space_(computer_science)
 
 [re-info]: https://docs.python.org/3/library/re.html
 [ddict-info]: https://docs.python.org/3/library/collections.html#collections.defaultdict
 [deque-info]: https://docs.python.org/3/library/collections.html#collections.deque
 [cycle-info]: https://docs.python.org/3/library/itertools.html#itertools.cycle
 [combo-info]: https://docs.python.org/3/library/itertools.html#itertools.combinations
+[cache-info]: https://docs.python.org/3/library/functools.html
