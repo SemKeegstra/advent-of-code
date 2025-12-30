@@ -24,6 +24,7 @@ Table of Contents
 - [Day 9 - Disk Fragmenter][d09]
 - [Day 10 - Hoof It][d10]
 - [Day 11 - Plutonian Pebbles][d11]
+- [Day 12 - Garden Groups][d12]
 
 Highlights
 ----------
@@ -617,6 +618,71 @@ via the built-in [cache][cache-info] decorator allows us to quickly calculate th
 sum(blink(stone, 75) for stone in stones)
 ```
 
+Day 12 - Garden Groups
+----------------------
+[Puzzle][d12-puzzle] — [Back to top][top]
+
+We are given a grid overview of the **garden**:
+
+```python
+# Input:
+garden = [list(line) for line in open(...).read().splitlines()]
+```
+With `R` & `C` being the total number of rows and columns within the grid respectively.
+
+### Part 12.1
+
+In order to calculate the fencing cost, we need to identify the individual garden plots within the arrangement and store
+both their **area** and **perimeter**. Before we do this, let us first define a function that can evaluate if a certain 
+point is inside the fence:
+
+```python
+def inside(plant: str, row: int, col: int) -> bool:
+    return 0 <= row < R and 0 <= col < C and garden[row][col] == plant
+```
+
+Next, we use a [flood fill][flood-info] approach to help us search the grid and identify the garden plot corresponding
+to point $(r,c)$. In particular, we define a [queue][deque-info] and keep checking the **plants** in the 4 surrounding
+directions:
+
+```python
+visited = set()
+def plot_search(r: int, c: int) -> tuple[int, int]:
+    plant, queue = garden[r][c], deque([(r,c)])
+    area = perimeter = 0
+
+    while queue:
+        r, c = queue.pop() 
+        if (r, c) in visited:
+            continue
+        visited.add((r, c))
+        area += 1
+        
+        for rr, cc in ((r+1,c), (r-1,c), (r,c+1), (r,c-1)):
+            if not inside(plant, rr, cc):
+                perimeter += 1
+            elif (rr, cc) not in visited:
+                queue.append((rr, cc))
+
+    return (area, perimeter)
+```
+Each newly **visited** point either increases the area (inside the plot) or increases the perimeter
+(outside the plot). To get our total **cost** we simply multiply the two counters for each individual plot:
+
+```python
+cost = 0
+for r in range(R):
+    for c in range(C):
+        if (r,c) not in visited:
+            area, perimeter = plot_search(r,c)
+            cost += area * perimeter
+```
+Note that by checking if we already visited a point, we only need to identify each unique garden plot once.
+
+### Part 12.2
+
+Since the elves qualify for the bulk discount, we actually need to count the number of **sides** now instead of the
+entire perimeter.
 
 
 [aoc-2024]: https://adventofcode.com/2024
@@ -633,6 +699,7 @@ sum(blink(stone, 75) for stone in stones)
 [d09]: #day-9---disk-fragmenter
 [d10]: #day-10---hoof-it
 [d11]: #day-11---plutonian-pebbles
+[d12]: #day-12---garden-groups
 
 [d01-puzzle]: https://adventofcode.com/2024/day/1
 [d02-puzzle]: https://adventofcode.com/2024/day/2
@@ -670,6 +737,7 @@ sum(blink(stone, 75) for stone in stones)
 [memo-info]: https://en.wikipedia.org/wiki/Memoization
 [dp-info]: https://en.wikipedia.org/wiki/Dynamic_programming
 [state-info]: https://en.wikipedia.org/wiki/State_space_(computer_science)
+[flood-info]: https://en.wikipedia.org/wiki/Flood_fill
 
 [re-info]: https://docs.python.org/3/library/re.html
 [ddict-info]: https://docs.python.org/3/library/collections.html#collections.defaultdict
