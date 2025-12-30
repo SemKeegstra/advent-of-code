@@ -642,7 +642,7 @@ def inside(plant: str, row: int, col: int) -> bool:
 ```
 
 Next, we use a [flood fill][flood-info] approach to help us search the grid and identify the garden plot corresponding
-to point $(r,c)$. In particular, we define a [queue][deque-info] and keep checking the **plants** in the 4 surrounding
+to point $(r,c)$. In particular, we define a [queue][deque-info] and keep checking the **plants** in the four surrounding
 directions:
 
 ```python
@@ -682,7 +682,49 @@ Note that by checking if we already visited a point, we only need to identify ea
 ### Part 12.2
 
 Since the elves qualify for the bulk discount, we actually need to count the number of **sides** now instead of the
-entire perimeter.
+entire perimeter. At first this seemed to be an easy change, however it took me quite some time to find an elegant
+solution that does not construct & store the actual sides. Eventually I realized that for any given [polygon][poly-info],
+the number of sides equals the number of corners. So we just need to count corners during our plot search!
+
+Given a point $(r,c)$ inside a garden plot, we determine how many **corners** it contributes by inspecting its local
+$2 x 2$ neighborhoods. A corner is formed either when both orthogonal neighbors are outside the plot (*outer corner*), or
+when both are inside but the diagonal is outside (*inner corner*). Summing these cases over all four diagonals gives
+us our corner count:
+
+```python
+def corner_count(r: int, c: int) -> int:
+    plant, corners = garden[r][c], 0
+    for dr, dc in ((-1, -1), (-1, 1), (1, -1), (1, 1)):
+        v = inside(plant, r + dr, c)        # Vertical
+        h = inside(plant, r, c + dc)        # Horizontal
+        d = inside(plant, r + dr, c + dc)   # Diagonal
+        corners += (not v and not h) or (v and h and not d)
+    return corners
+```
+
+Using the above function we can tweak our original search approach a bit, allowing us to calculate the discounted cost:
+
+```python
+def plot_search(r: int, c: int) -> tuple[int, int]:
+    plant, queue = garden[r][c], deque([(r,c)])
+    area = sides = 0
+
+    while queue:
+        r, c = queue.pop() 
+        if (r, c) in visited:
+            continue
+        visited.add((r, c))
+        area += 1
+        sides += corner_count(r,c)
+        
+        for rr, cc in ((r+1,c), (r-1,c), (r,c+1), (r,c-1)):
+            if not inside(plant, rr, cc):
+                continue
+            elif (rr, cc) not in visited:
+                queue.append((rr, cc))
+
+    return (area, sides)
+```
 
 
 [aoc-2024]: https://adventofcode.com/2024
@@ -738,6 +780,7 @@ entire perimeter.
 [dp-info]: https://en.wikipedia.org/wiki/Dynamic_programming
 [state-info]: https://en.wikipedia.org/wiki/State_space_(computer_science)
 [flood-info]: https://en.wikipedia.org/wiki/Flood_fill
+[poly-info]: https://en.wikipedia.org/wiki/Polygon
 
 [re-info]: https://docs.python.org/3/library/re.html
 [ddict-info]: https://docs.python.org/3/library/collections.html#collections.defaultdict
