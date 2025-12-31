@@ -25,6 +25,7 @@ Table of Contents
 - [Day 10 - Hoof It][d10]
 - [Day 11 - Plutonian Pebbles][d11]
 - [Day 12 - Garden Groups][d12]
+- [Day 13 - Claw Contraption][d13]
 
 Highlights
 ----------
@@ -726,6 +727,28 @@ def plot_search(r: int, c: int) -> tuple[int, int]:
     return (area, sides)
 ```
 
+Day 13 - Claw Contraption
+-------------------------
+[Puzzle][d13-puzzle] — [Back to top][top]
+
+We are given information about the various claw **machines** inside the new arcade. Unfortunately, it is not presented
+in a very nice format. So let us first define a function that helps us normalize this tedious input:
+
+```python
+def norm(line: str):
+    return tuple(map(int, (line.split('X')[1].split(',')[0].lstrip('+='), line.split('Y')[1].lstrip('+='))))
+```
+
+This allows us to define each machine by three $(x,y)$ tuples, namely: **button** A & B and the **goal**.
+
+```python
+# Input:
+machines  = [[norm(line) for line in m.splitlines()] for m in open(...).read().split("\n\n")]
+```
+
+### Part 13.1
+
+
 
 [aoc-2024]: https://adventofcode.com/2024
 [top]: #advent-of-code-2024-solutions
@@ -742,6 +765,7 @@ def plot_search(r: int, c: int) -> tuple[int, int]:
 [d10]: #day-10---hoof-it
 [d11]: #day-11---plutonian-pebbles
 [d12]: #day-12---garden-groups
+[d13]: #day-13---claw-contraption
 
 [d01-puzzle]: https://adventofcode.com/2024/day/1
 [d02-puzzle]: https://adventofcode.com/2024/day/2
