@@ -763,6 +763,22 @@ a_y B_a + b_y B_b &= g_y
 \quad \Longrightarrow \quad
 $$
 
+$$
+\begin{bmatrix}
+a_x & b_x \\
+a_y & b_y
+\end{bmatrix}
+\begin{bmatrix}
+B_a \\
+B_b
+\end{bmatrix}
+=
+\begin{bmatrix}
+g_x \\
+g_y
+\end{bmatrix}
+$$
+
 Now I first wanted to count the number of complex games that we area dealing with, which I did using [Cramer's rule][cramer-info]: 
 for any system of linear equations $Ax = b$ if the [determinant][det-info] of $A$ is unequal to zero then the system has 
 a known unique solution. In our case this translates to checking:
