@@ -761,9 +761,6 @@ a_x B_a + b_x B_b &= g_x \\
 a_y B_a + b_y B_b &= g_y
 \end{aligned}
 \quad \Longrightarrow \quad
-$$
-
-$$
 \begin{bmatrix}
 a_x & b_x \\
 a_y & b_y
