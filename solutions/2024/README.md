@@ -25,6 +25,7 @@ Table of Contents
 - [Day 10 - Hoof It][d10]
 - [Day 11 - Plutonian Pebbles][d11]
 - [Day 12 - Garden Groups][d12]
+- [Day 13 - Claw Contraption][d13]
 
 Highlights
 ----------
@@ -726,6 +727,102 @@ def plot_search(r: int, c: int) -> tuple[int, int]:
     return (area, sides)
 ```
 
+Day 13 - Claw Contraption
+-------------------------
+[Puzzle][d13-puzzle] — [Back to top][top]
+
+We are given information about the various claw **machines** inside the new arcade. Unfortunately, it is not presented
+in a very nice format. So let us first define a function that helps us normalize this tedious input:
+
+```python
+def norm(line: str):
+    return tuple(map(int, (line.split('X')[1].split(',')[0].lstrip('+='), line.split('Y')[1].lstrip('+='))))
+```
+
+This allows us to define each machine by three $(x,y)$ tuples, namely: **button** A & B and the **goal**.
+
+```python
+# Input:
+machines  = [[norm(line) for line in m.splitlines()] for m in open(...).read().split("\n\n")]
+```
+
+### Part 13.1
+
+We are asked to find (if possible) the minimum **cost** to win the game per machine without pressing any of the two 
+buttons more than 100 times. Since I solved the previous two days by simulating the process with a recursive function, 
+my brain immediately wanted to do that again. However, there is a much simpler approach, because we are actually dealing with
+a [linear system][sys-info] and a very small one at that: 2 equations with only 2 unknowns.
+
+For a single machine with two buttons $B_a$ & $B_b$, we can write the system as follows:
+
+$$
+\begin{aligned}
+a_x B_a + b_x B_b &= g_x \\
+a_y B_a + b_y B_b &= g_y
+\end{aligned}
+\quad \Longrightarrow \quad
+\begin{bmatrix}
+a_x & b_x \\
+a_y & b_y
+\end{bmatrix}
+\begin{bmatrix}
+B_a \\
+B_b
+\end{bmatrix}
+= \begin{bmatrix}
+g_x \\
+g_y
+\end{bmatrix}
+$$
+
+Now I first wanted to count the number of complex games that we area dealing with, which I did using [Cramer's rule][cramer-info]: 
+for any system of linear equations $Ax = b$ if the [determinant][det-info] of $A$ is unequal to zero then the system has 
+a known unique solution. In our case this translates to checking:
+
+$$
+\det\begin{bmatrix}
+a_x & b_x \\
+a_y & b_y
+\end{bmatrix}
+= a_x b_y - b_x a_y \neq 0
+$$
+
+To my surprise, not a single machine has a determinant equal to zero! This means that we can simply calculate the 
+closed-form solution to this problem per machine:
+
+$$
+x_i = \frac{\det(A_i)}{\det(A)}
+\quad \Longrightarrow \quad
+B_a = \dfrac{g_x b_y - b_x g_y}{a_x b_y - b_x a_y} \mbox{    and    } B_b = \dfrac{a_x g_y - g_x a_y}{a_x b_y - b_x a_y}
+$$
+
+So our minimum cost function becomes:
+
+```python
+def min_cost(A: tuple[int,int], B: tuple[int,int], G: tuple[int, int], limit: int=100) -> int:
+    (ax, ay), (bx, by), (gx, gy) = A, B, G
+
+    D = (ax * by) - (bx*ay)
+    if D != 0:
+        Da = (gx*by) - (bx*gy)
+        Db = (ax*gy) - (gx*ay)
+        a, b = (Da / D), (Db / D)
+
+        if (a % 1 == b % 1 == 0) and (0 <= a <= limit) and (0 <= b <= limit):
+            return int(3*a +b)
+            
+    return 0
+```
+
+Which allows us to calculate the total sum of minimum costs:
+
+```python
+sum(min_cost(*machine) for machine in machines)
+```
+
+### Part 13.2
+
+For part two we can do exactly the same after removing the **limit** check from the if-statement in our function.
 
 [aoc-2024]: https://adventofcode.com/2024
 [top]: #advent-of-code-2024-solutions
@@ -742,6 +839,7 @@ def plot_search(r: int, c: int) -> tuple[int, int]:
 [d10]: #day-10---hoof-it
 [d11]: #day-11---plutonian-pebbles
 [d12]: #day-12---garden-groups
+[d13]: #day-13---claw-contraption
 
 [d01-puzzle]: https://adventofcode.com/2024/day/1
 [d02-puzzle]: https://adventofcode.com/2024/day/2
@@ -781,6 +879,9 @@ def plot_search(r: int, c: int) -> tuple[int, int]:
 [state-info]: https://en.wikipedia.org/wiki/State_space_(computer_science)
 [flood-info]: https://en.wikipedia.org/wiki/Flood_fill
 [poly-info]: https://en.wikipedia.org/wiki/Polygon
+[sys-info]: https://en.wikipedia.org/wiki/System_of_linear_equations
+[cramer-info]: https://en.wikipedia.org/wiki/Cramer%27s_rule
+[det-info]: https://en.wikipedia.org/wiki/Determinant
 
 [re-info]: https://docs.python.org/3/library/re.html
 [ddict-info]: https://docs.python.org/3/library/collections.html#collections.defaultdict
