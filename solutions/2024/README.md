@@ -781,21 +781,21 @@ for any system of linear equations $Ax = b$ if the [determinant][det-info] of $A
 a known unique solution. In our case this translates to checking:
 
 $$
-\det\!\begin{bmatrix}
+\det\begin{bmatrix}
 a_x & b_x \\
 a_y & b_y
 \end{bmatrix}
 = a_x b_y - b_x a_y \neq 0
 $$
 
-To my surprise, not a single machine had a determinant equal to zero! This means that we can simply calculate the 
+To my surprise, not a single machine has a determinant equal to zero! This means that we can simply calculate the 
 closed-form solution to this problem per machine:
 
 $$
 x_i = \frac{\det(A_i)}{\det(A)}
-\;\;\Longrightarrow\;\;
+\quad \Longrightarrow \quad
 \begin{cases}
-b_A = \dfrac{g_x b_y - b_x g_y}{a_x b_y - b_x a_y}, \\[6pt]
+b_A = \dfrac{g_x b_y - b_x g_y}{a_x b_y - b_x a_y},
 b_B = \dfrac{a_x g_y - g_x a_y}{a_x b_y - b_x a_y}
 \end{cases}
 $$
