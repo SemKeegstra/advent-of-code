@@ -748,6 +748,67 @@ machines  = [[norm(line) for line in m.splitlines()] for m in open(...).read().s
 
 ### Part 13.1
 
+We are asked to find (if possible) the minimum **cost** to win the game per machine without pressing any of the two 
+buttons more than 100 times. Since I solved the previous two days by simulating the process with a recursive function, 
+my brain immediately wanted to do that again. However, there is a much simpler approach, because we are actually dealing with
+a [linear system][sys-info] and a very small one at that: only 2 equations with 2 unknowns.
+
+For a single machine with two buttons $B_a$ & $B_b$, we can write the system as follows:
+
+$$
+\begin{aligned}
+a_x B_a + b_x B_b &= g_x \\
+a_y B_a + b_y B_b &= g_y \\
+\end{aligned}
+\quad \Longrightarrow \quad
+\left[
+\begin{array}{cc}
+a_x & b_x \\
+a_y & b_y \\
+\end{array}
+\right]
+\left[
+\begin{array}{c}
+B_a \\
+B_b \\
+\end{array}
+\right]
+=
+\left[
+\begin{array}{c}
+g_x \\
+g_y \\
+\end{array}
+\right]
+$$
+
+Note that [Cramer's rule][cramer-info] states
+
+```python
+def min_cost(A: tuple[int,int], B: tuple[int,int], G: tuple[int, int], limit: int=100) -> int:
+    (ax, ay), (bx, by), (gx, gy) = A, B, G
+
+    D = (ax * by) - (bx*ay)
+    if D != 0:
+        Da = (gx*by) - (bx*gy)
+        Db = (ax*gy) - (gx*ay)
+        a, b = (Da / D), (Db / D)
+
+        if (a % 1 == b % 1 == 0) and (0 <= a <= limit) and (0 <= b <= limit):
+            return int(3*a +b)
+            
+    return 0
+```
+
+...
+
+```python
+sum(min_cost(*machine) for machine in machines)
+```
+
+### Part 13.2
+
+...
 
 
 [aoc-2024]: https://adventofcode.com/2024
@@ -805,6 +866,8 @@ machines  = [[norm(line) for line in m.splitlines()] for m in open(...).read().s
 [state-info]: https://en.wikipedia.org/wiki/State_space_(computer_science)
 [flood-info]: https://en.wikipedia.org/wiki/Flood_fill
 [poly-info]: https://en.wikipedia.org/wiki/Polygon
+[sys-info]: https://en.wikipedia.org/wiki/System_of_linear_equations
+[cramer-info]: https://en.wikipedia.org/wiki/Cramer%27s_rule
 
 [re-info]: https://docs.python.org/3/library/re.html
 [ddict-info]: https://docs.python.org/3/library/collections.html#collections.defaultdict
