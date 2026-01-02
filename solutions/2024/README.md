@@ -755,35 +755,35 @@ a [linear system][sys-info] and a very small one at that: 2 equations with 2 unk
 
 For a single machine with two buttons $B_a$ & $B_b$, we can write the system as follows:
 
-$$
-\left\{
-\begin{array}{rcl}
-a_x B_a + b_x B_b & = & g_x \\
-a_y B_a + b_y B_b & = & g_y
-\end{array}
-\right.
-\quad \Longrightarrow \quad
-\begin{bmatrix}
-a_x & b_x \\
-a_y & b_y
-\end{bmatrix}
-\begin{bmatrix}
-B_a \\
-B_b
-\end{bmatrix}
+$$\left\{\begin{aligned}
+a_x B_a + b_x B_b &= g_x\\
+a_y B_a + b_y B_b &= g_y
+\end{aligned}\right.\quad\Longrightarrow\quad
+\begin{bmatrix}a_x&b_x\\ a_y&b_y\end{bmatrix}
+\begin{bmatrix}B_a\\ B_b\end{bmatrix}
 =
-\begin{bmatrix}
-g_x \\
-g_y
-\end{bmatrix}
-$$
+\begin{bmatrix}g_x\\ g_y\end{bmatrix}$$
 
 Now I first wanted to count the number of complex games that we area dealing with, which I did using [Cramer's rule][cramer-info]: 
 for any system of linear equations $Ax = b$ if the [determinant][det-info] of $A$ is unequal to zero then the system has 
 a known unique solution. In our case this translates to checking:
 
-$$\left\{\begin{aligned} a_x B_a + b_x B_b &= g_x\\ a_y B_a + b_y B_b &= g_y \end{aligned}\right.\quad\Longrightarrow\quad \begin{bmatrix}a_x&b_x\\ a_y&b_y\end{bmatrix}\begin{bmatrix}B_a\\B_b\end{bmatrix}=\begin{bmatrix}g_x\\g_y\end{bmatrix}$$
+$$
+\det\begin{bmatrix}
+a_x & b_x \\
+a_y & b_y
+\end{bmatrix}
+= a_x b_y - b_x a_y \neq 0
+$$
 
+To my surprise, not a single machine has a determinant equal to zero! This means that we can simply calculate the 
+closed-form solution to this problem per machine:
+
+$$
+x_i = \frac{\det(A_i)}{\det(A)}
+\quad \Longrightarrow \quad
+B_A = \dfrac{g_x b_y - b_x g_y}{a_x b_y - b_x a_y} \mbox{  and  } B_b = \dfrac{a_x g_y - g_x a_y}{a_x b_y - b_x a_y}
+$$
 
 So our minimum cost function becomes:
 
