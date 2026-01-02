@@ -756,10 +756,12 @@ a [linear system][sys-info] and a very small one at that: 2 equations with 2 unk
 For a single machine with two buttons $B_a$ & $B_b$, we can write the system as follows:
 
 $$
-\begin{aligned}
-a_x B_a + b_x B_b &= g_x \\
-a_y B_a + b_y B_b &= g_y
-\end{aligned}
+\left\{
+\begin{array}{rcl}
+a_x B_a + b_x B_b & = & g_x \\
+a_y B_a + b_y B_b & = & g_y
+\end{array}
+\right.
 \quad \Longrightarrow \quad
 \begin{bmatrix}
 a_x & b_x \\
@@ -794,13 +796,10 @@ closed-form solution to this problem per machine:
 $$
 x_i = \frac{\det(A_i)}{\det(A)}
 \quad \Longrightarrow \quad
-\begin{cases}
-b_A = \dfrac{g_x b_y - b_x g_y}{a_x b_y - b_x a_y},
-b_B = \dfrac{a_x g_y - g_x a_y}{a_x b_y - b_x a_y}
-\end{cases}
+b_A = \dfrac{g_x b_y - b_x g_y}{a_x b_y - b_x a_y} \mbox{  and  } b_B = \dfrac{a_x g_y - g_x a_y}{a_x b_y - b_x a_y}
 $$
 
-This means that our function to calculate the minimum cost of a game can be written as:
+So our minimum cost function becomes:
 
 ```python
 def min_cost(A: tuple[int,int], B: tuple[int,int], G: tuple[int, int], limit: int=100) -> int:
@@ -826,7 +825,9 @@ sum(min_cost(*machine) for machine in machines)
 
 ### Part 13.2
 
-...
+For part two we can just remove the **limit** from our function and increase the goal input by 10 trillion.
+
+
 
 
 [aoc-2024]: https://adventofcode.com/2024
