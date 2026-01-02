@@ -751,7 +751,7 @@ machines  = [[norm(line) for line in m.splitlines()] for m in open(...).read().s
 We are asked to find (if possible) the minimum **cost** to win the game per machine without pressing any of the two 
 buttons more than 100 times. Since I solved the previous two days by simulating the process with a recursive function, 
 my brain immediately wanted to do that again. However, there is a much simpler approach, because we are actually dealing with
-a [linear system][sys-info] and a very small one at that: 2 equations with 2 unknowns.
+a [linear system][sys-info] and a very small one at that: 2 equations with only 2 unknowns.
 
 For a single machine with two buttons $B_a$ & $B_b$, we can write the system as follows:
 
@@ -771,7 +771,7 @@ B_b
 \end{bmatrix}
 = \begin{bmatrix}
 g_x \\
-B_y
+g_y
 \end{bmatrix}
 $$
 
@@ -793,7 +793,7 @@ closed-form solution to this problem per machine:
 $$
 x_i = \frac{\det(A_i)}{\det(A)}
 \quad \Longrightarrow \quad
-B_a = \dfrac{g_x b_y - b_x g_y}{a_x b_y - b_x a_y} \mbox{  and  } B_b = \dfrac{a_x g_y - g_x a_y}{a_x b_y - b_x a_y}
+B_a = \dfrac{g_x b_y - b_x g_y}{a_x b_y - b_x a_y} \mbox{    and    } B_b = \dfrac{a_x g_y - g_x a_y}{a_x b_y - b_x a_y}
 $$
 
 So our minimum cost function becomes:
