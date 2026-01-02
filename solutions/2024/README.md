@@ -757,29 +757,23 @@ For a single machine with two buttons $B_a$ & $B_b$, we can write the system as 
 
 $$
 \begin{aligned}
-a_x B_a + b_x B_b &= g_x \\
-a_y B_a + b_y B_b &= g_y \\
+a_x b_A + b_x b_B &= g_x \\
+a_y b_A + b_y b_B &= g_y
 \end{aligned}
-\quad \Longrightarrow \quad
-\left[
-\begin{array}{cc}
+\;\;\Longrightarrow\;\;
+\begin{bmatrix}
 a_x & b_x \\
-a_y & b_y \\
-\end{array}
-\right]
-\left[
-\begin{array}{c}
-B_a \\
-B_b \\
-\end{array}
-\right]
+a_y & b_y
+\end{bmatrix}
+\begin{bmatrix}
+b_A \\
+b_B
+\end{bmatrix}
 =
-\left[
-\begin{array}{c}
+\begin{bmatrix}
 g_x \\
-g_y \\
-\end{array}
-\right]
+g_y
+\end{bmatrix}
 $$
 
 Note that [Cramer's rule][cramer-info] states
