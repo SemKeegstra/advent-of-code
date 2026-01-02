@@ -782,22 +782,8 @@ Now I first wanted to count the number of complex games that we area dealing wit
 for any system of linear equations $Ax = b$ if the [determinant][det-info] of $A$ is unequal to zero then the system has 
 a known unique solution. In our case this translates to checking:
 
-$$
-\det\begin{bmatrix}
-a_x & b_x \\
-a_y & b_y
-\end{bmatrix}
-= a_x b_y - b_x a_y \neq 0
-$$
+$$\left\{\begin{aligned} a_x B_a + b_x B_b &= g_x\\ a_y B_a + b_y B_b &= g_y \end{aligned}\right.\quad\Longrightarrow\quad \begin{bmatrix}a_x&b_x\\ a_y&b_y\end{bmatrix}\begin{bmatrix}B_a\\B_b\end{bmatrix}=\begin{bmatrix}g_x\\g_y\end{bmatrix}$$
 
-To my surprise, not a single machine has a determinant equal to zero! This means that we can simply calculate the 
-closed-form solution to this problem per machine:
-
-$$
-x_i = \frac{\det(A_i)}{\det(A)}
-\quad \Longrightarrow \quad
-b_A = \dfrac{g_x b_y - b_x g_y}{a_x b_y - b_x a_y} \mbox{  and  } b_B = \dfrac{a_x g_y - g_x a_y}{a_x b_y - b_x a_y}
-$$
 
 So our minimum cost function becomes:
 
@@ -825,10 +811,7 @@ sum(min_cost(*machine) for machine in machines)
 
 ### Part 13.2
 
-For part two we can just remove the **limit** from our function and increase the goal input by 10 trillion.
-
-
-
+For part two we can do exactly the same after removing the **limit** check from the if-statement in our function.
 
 [aoc-2024]: https://adventofcode.com/2024
 [top]: #advent-of-code-2024-solutions
