@@ -772,11 +772,6 @@ a_y & b_y
 B_a \\
 B_b
 \end{bmatrix}
-=
-\begin{bmatrix}
-g_x \\
-g_y
-\end{bmatrix}
 $$
 
 Now I first wanted to count the number of complex games that we area dealing with, which I did using [Cramer's rule][cramer-info]: 
