@@ -26,6 +26,7 @@ Table of Contents
 - [Day 11 - Plutonian Pebbles][d11]
 - [Day 12 - Garden Groups][d12]
 - [Day 13 - Claw Contraption][d13]
+- [Day 14 - Restroom Redoubt][d14]
 
 Highlights
 ----------
@@ -802,10 +803,10 @@ So our minimum cost function becomes:
 def min_cost(A: tuple[int,int], B: tuple[int,int], G: tuple[int, int], limit: int=100) -> int:
     (ax, ay), (bx, by), (gx, gy) = A, B, G
 
-    D = (ax * by) - (bx*ay)
+    D = (ax * by) - (bx * ay)
     if D != 0:
-        Da = (gx*by) - (bx*gy)
-        Db = (ax*gy) - (gx*ay)
+        Da = (gx * by) - (bx * gy)
+        Db = (ax * gy) - (gx * ay)
         a, b = (Da / D), (Db / D)
 
         if (a % 1 == b % 1 == 0) and (0 <= a <= limit) and (0 <= b <= limit):
@@ -824,6 +825,88 @@ sum(min_cost(*machine) for machine in machines)
 
 For part two we can do exactly the same after removing the **limit** check from the if-statement in our function.
 
+Day 14 - Restroom Redoubt
+-------------------------
+[Puzzle][d14-puzzle] — [Back to top][top]
+
+We are given information regarding the bathroom security **robots** of the Easter Bunny Headquarters:
+
+```python
+# Input:
+robots = [[tuple(map(int, c[2:].split(','))) for c in line.split()] for line in open(...)]
+```
+
+I have defined each robot by two tuples, namely: its current $(x,y)$ **position** and its **velocity** across the $x$ 
+and $y$ axis.
+
+### Part 14.1
+
+In order to locate the robots after $n$ seconds, lets just simulate their **movements** by recursively updating the position
+of each robot within the list every **second** and then when $n=0$ construct the **grid**:
+
+```python
+W, H = 101, 103
+def move(robots: list[tuple], seconds: int=100) -> list[list[int]]:
+    if seconds == 0:
+        grid = [[0]*W for _ in range(H)]
+        for (x,y), _ in robots:
+            grid[y][x] += 1
+        return grid
+    else:
+        for i, ((x,y), (vx, vy)) in enumerate(robots):
+            robots[i][0] = ((x+vx) % W, (y+vy) % H)
+    return move(robots, seconds-1)
+```
+
+Note that I used [modular arithmetics][mod-info] (`%`) to account for the teleportation feature of the robots. Next, we
+need to define the quadrants of the grid and count the number of robots within each:
+
+```python
+mx, my = W // 2, H // 2
+total, grid = 1, move(robots, 100)
+for rs in (range(0, my), range(my + 1, H)):
+    for cs in (range(0, mx), range(mx + 1, W)):
+        q = sum(grid[r][c] for r in rs for c in cs)
+        total *= q
+```
+
+### Part 14.2
+
+We are not given a lot to go on in the second part, just that there is an **easter egg** hidden within the grids over
+time that shows a picture of a Christmas tree. So we want to do the following:
+
+```python
+seconds = 0
+while True:
+    seconds +=1
+    grid = move(robots, 1)
+    if tree_search(grid):
+        break
+```
+
+The question that remains is, how on earth are we going to define `tree_search()`? I did not know where to start, so
+I just visualized each grid for the first ten seconds. What I noticed is that robots seldom form a row of more than two.
+In my mind, one would need at least a few long rows of robots to depict a tree, because I was thinking that all robots
+would form one crazy big tree together. So I started searching for a grid that includes a certain minimum row **length**:
+
+```python
+def tree_search(grid: list[list[int]], length: int=8) -> bool:
+    for row in grid:
+        cnt = 0
+        for x in row:
+            cnt = cnt + 1 if x else 0
+            if cnt == length:
+                return True
+    return False
+```
+I began with `length=15` and that worked immediately, however 8 would have already been enough because the tree was hidden 
+in a different way than I imagined:
+
+<p align="center">
+  <img src="../../_static/images/2024/D14P2.png">
+</p>
+
+
 [aoc-2024]: https://adventofcode.com/2024
 [top]: #advent-of-code-2024-solutions
 [hig]: #highlights
@@ -840,6 +923,7 @@ For part two we can do exactly the same after removing the **limit** check from 
 [d11]: #day-11---plutonian-pebbles
 [d12]: #day-12---garden-groups
 [d13]: #day-13---claw-contraption
+[d14]: #day-14---restroom-redoubt
 
 [d01-puzzle]: https://adventofcode.com/2024/day/1
 [d02-puzzle]: https://adventofcode.com/2024/day/2
@@ -882,6 +966,7 @@ For part two we can do exactly the same after removing the **limit** check from 
 [sys-info]: https://en.wikipedia.org/wiki/System_of_linear_equations
 [cramer-info]: https://en.wikipedia.org/wiki/Cramer%27s_rule
 [det-info]: https://en.wikipedia.org/wiki/Determinant
+[mod-info]: https://en.wikipedia.org/wiki/Modular_arithmetic
 
 [re-info]: https://docs.python.org/3/library/re.html
 [ddict-info]: https://docs.python.org/3/library/collections.html#collections.defaultdict
